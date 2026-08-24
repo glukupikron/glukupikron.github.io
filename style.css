@@ -3,19 +3,95 @@ body {
 }
 
 .letters {
-    border : 1px solid;
-    padding : 10px;
-    height : 300px;
-    width : 300px;
+    display : flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    
     background-color : beige;
     font-family : 'Courier New', Courier, monospace; 
     cursor : pointer;
+    
 }
+
+#clipGlow {
+    filter: drop-shadow(0px 0px 0px rgb(255, 255, 255));
+    z-index: 1;
+    position: absolute;
+    top: 57px;
+    animation-name: Glow;
+    animation-duration: 1s;
+    animation-direction: alternate;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in; 
+}
+
+@keyframes Glow {
+    from {
+        filter: drop-shadow(0px 0px 0px rgb(255, 255, 255));
+    }
+    to {
+        filter: drop-shadow(0px 0px 15px rgb(255, 255, 255));
+    }
+}
+
+
+#clipImage {
+    /*clip-path: polygon(45% 34%, 46% 34%, 50% 85%, 48% 86%);*/
+    clip-path: polygon(45% 35%, 46% 35%, 50% 85%, 48% 85%);
+    
+    
+}
+
+#lettersImage {
+  
+    z-index: 1;
+    position: relative;
+    top: 10px;
+    border: 1px solid;
+   
+    
+}
+
+.letterPaper {
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    
+    background-color : beige;
+    font-family : 'Courier New', Courier, monospace; 
+    cursor : pointer;
+    display : none;
+}
+
 
 .debris {
     width: 100vw;
     height: 100vh;
 }
+
+/*
+Source - https://stackoverflow.com/a/68217932
+Posted by Temani Afif, modified by community. See post 'Timeline' for change history
+Retrieved 2026-08-25, License - CC BY-SA 4.0  
+
+.shimmer {
+  color: grey;
+  display: inline-block;
+  mask: linear-gradient(-60deg, #000 30%, #0005, #000 70%) right/350% 100%;
+  animation: shimmer 2.5s infinite;
+  max-width: 200px;
+  
+}
+
+@keyframes shimmer {
+  100% {
+    mask-position: left
+  }
+}
+
+ */
+
 
 .testdebris {
     border: 1px solid;
@@ -31,4 +107,51 @@ body {
     top: 900px;
     left: 600px; 
     background: gray;
+}
+
+
+/* CSS Variables - input */
+:root {
+  --input-width: 360px;
+  --input-font-size: 14px;
+  --input-pad-x: 12px;
+  --input-pad-y: 8px;
+  --input-radius: 0px;
+  --input-bg: #ffffff;
+  --input-color: #111827;
+  --input-placeholder: #c0d5f2;
+  --input-border: 1.5px dotted #c0d5f2;
+  --input-focus-color: #b1cff7;
+  --input-focus-ring: 2px;
+  --input-shadow: 0px 0px 9px 3px rgba(191,219,254,0.03);
+}
+
+/* Styles */
+.input-wrapper {
+  position: absolute;
+  top: 400px;
+  width: var(--input-width);
+}
+
+.custom-input {
+  width: 100%;
+  font-family: inherit;
+  font-size: var(--input-font-size);
+  padding: var(--input-pad-y) var(--input-pad-x);
+  border-radius: var(--input-radius);
+  background: var(--input-bg);
+  color: var(--input-color);
+  border: var(--input-border);
+  box-shadow: var(--input-shadow);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.custom-input::placeholder {
+  color: var(--input-placeholder);
+}
+
+.custom-input:focus {
+  border-color: var(--input-focus-color);
+  box-shadow: 0px 0px 9px 3px rgba(191,219,254,0.03), 0 0 0 2px rgba(177,207,247,0.35);
 }

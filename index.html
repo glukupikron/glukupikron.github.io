@@ -4,12 +4,33 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pen</title>
+    <title>waiting</title>
   </head>
   <body>
+
+    <!--편지 쓰기 div-->
     <div class = "letters" onclick = 'stopScroll()'>
-        write a letter
-    </div>
+      <img src = "use_image/letters.png" id = "lettersImage">
+      <div id = "clipGlow">
+        <img src = "use_image/letters.png" id = "clipImage" onclick = 'showPaper()'>
+        <p style="text-align: center;"> Discover your paper to write on. </p>
+      </div>
+     
+      <div class = "letterPaper">
+       <img src = "use_image/paper-image.png">
+       <div class="input-wrapper">
+          <input
+            class="custom-input"
+            type="text"
+            placeholder="Words..."
+          />
+      </div>
+      </div>
+   </div>
+
+  
+   
+
     <div style = "height: 10000px;"> 
     <p>안녕하세요</p>
     <p>안녕하세요</p>
