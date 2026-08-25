@@ -1,10 +1,7 @@
 let runScroll;
 
 function autoScroll(){
-  window.scrollBy(
-    { top: 1, left: 0, behavior: 'smooth' }
-
-  )
+  window.scrollBy(0,1);
 }
 
 runScroll = setInterval(autoScroll, 20);
