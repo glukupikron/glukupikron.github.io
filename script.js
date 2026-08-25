@@ -33,7 +33,7 @@ window.addEventListener('scroll',() => {
     }
 } )
 
-// debris 호출
+// debris 호출gg
 const $debris = document.querySelector(".debris");
 const maxSize = Math.max(window.innerWidth, window.innerHeight);
 
