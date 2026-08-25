@@ -8,7 +8,11 @@ body {
     }
 }
 
-.lettertemplate {
+.eventTemplate {
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.letterTemplate {
     display : flex;
     justify-content: center;
     align-items: center;

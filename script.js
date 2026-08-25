@@ -17,6 +17,16 @@ function scrollAgain(){
 }
 
 
+function randomEvent(){
+    let saveEvents = document.querySelectorAll(".eventTemplate");
+    let whichEvent = Math.floor(Math.random()*saveEvents.length);
+    let actEvent = saveEvents[whichEvent]
+    let newEvent = actEvent.cloneNode(true);
+    /* appendchild 다음부터 */
+}
+
+
+
 window.addEventListener('scroll',() => {
     if(window.scrollY + window.innerHeight >= document.documentElement.scrollHeight){
         // 랜덤으로 호출하기 
