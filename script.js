@@ -39,8 +39,9 @@ const maxSize = Math.max(window.innerWidth, window.innerHeight);
 
 
 function showPaper() {
-  document.getElementById("clipGlow").style.display = "none";
-  document.getElementById("clipImage").style.display = "none";
-  document.getElementById("lettersImage").style.display = "none";
+  document.getElementByClassname("clipGlow").style.display = "none";
+  document.getElementByClassname("clipImage").style.display = "none";
+  document.getElementByClassname("lettersImage").style.display = "none";
   document.querySelector(".letterPaper").style.display = "flex";
 }
+
