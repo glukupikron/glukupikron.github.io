@@ -50,6 +50,49 @@ const $debris = document.querySelector(".debris");
 const maxSize = Math.max(window.innerWidth, window.innerHeight);
 
 
+// 글자 애니메이션
+
+function animateWrittenLetter (
+    writtenLetter,
+    text
+) {
+    anime.remove(writtenLetter.querySelectorAll(".moji"));
+    anime.remove(writtenLetter);
+    writtenLetter.style.opacity = "1";
+    writtenLetter.textContent = "";
+
+    for (const character of text) {
+        if (/\S/.test(character)) {
+            const span = document.createElement("span");
+
+            span.className = "moji";
+            span.textContent = character;
+            span.style.opacity = "0";
+
+
+            writtenLetter.appendChild(span);
+        } else {
+            const space = document.createTextNode(character);
+
+            writtenLetter.appendChild(space);
+        }
+    }
+anime.timeline({loop: false})
+    .add ({
+        targets: writtenLetter.querySelectorAll(".moji"),
+
+        opacity: [0,1],
+        easing: "easeInOutQuad",
+        duration: 2250,
+        delay: function(element, index){
+            return 150 * (index + 1);
+        }
+    });
+
+   
+}
+
+// 편지찾기 click
 document.addEventListener("click", function (event) {
     const clipImage = event.target.closest(".clipImage");
 
@@ -74,7 +117,9 @@ document.addEventListener("click", function (event) {
 
         const writtenLetter = specificLetter.querySelector(".writtenLetter");
 
-        writtenLetter.textContent = input.value;
+        animateWrittenLetter(
+            writtenLetter, input.value
+        );
 
     }
 });
