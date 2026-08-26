@@ -63,15 +63,61 @@ body {
     
 }
 
+
 .letterPaper {
     justify-content: center;
-    align-items: center;
     flex-direction: column;
-    
+    align-items: center;
     background-color : beige;
     font-family : 'Courier New', Courier, monospace; 
     cursor : pointer;
     display : none;
+    position: relative
+}
+
+.letterButton {
+    margin-left: 10px;
+    width: auto;
+    height: 34px;
+    background: #c0d5f2;
+    color: #ffffff;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 0px;
+    border-width: 1px;
+    border-color: #b1cff7;
+    border-style: solid;
+    padding: 10px 22px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: inline-flex;
+    user-select: auto;
+    position: relative;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.letterButton:hover {
+  transform: none;
+  background: #d0dce2;
+  color: #ffffff;
+}
+
+
+/* letter box 편지 내용*/
+#writtenLetter {
+    position: absolute;
+    top: 0;
+    font-family : 'Courier New', Courier, monospace;
+    padding-top : 110px;
+    padding-left: 110px;
+    font-size: 20px;
+    align-self: flex-start;
+    white-space: normal;
+    line-height: 1.6;
 }
 
 
@@ -80,27 +126,7 @@ body {
     height: 100vh;
 }
 
-/*
-Source - https://stackoverflow.com/a/68217932
-Posted by Temani Afif, modified by community. See post 'Timeline' for change history
-Retrieved 2026-08-25, License - CC BY-SA 4.0  
 
-.shimmer {
-  color: grey;
-  display: inline-block;
-  mask: linear-gradient(-60deg, #000 30%, #0005, #000 70%) right/350% 100%;
-  animation: shimmer 2.5s infinite;
-  max-width: 200px;
-  
-}
-
-@keyframes shimmer {
-  100% {
-    mask-position: left
-  }
-}
-
- */
 
 
 .testdebris {
@@ -139,8 +165,12 @@ Retrieved 2026-08-25, License - CC BY-SA 4.0
 /* Styles */
 .input-wrapper {
   position: absolute;
+  
   top: 400px;
   width: var(--input-width);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .custom-input {
@@ -165,3 +195,32 @@ Retrieved 2026-08-25, License - CC BY-SA 4.0
   border-color: var(--input-focus-color);
   box-shadow: 0px 0px 9px 3px rgba(191,219,254,0.03), 0 0 0 2px rgba(177,207,247,0.35);
 }
+
+
+
+
+
+
+
+
+/*
+Source - https://stackoverflow.com/a/68217932
+Posted by Temani Afif, modified by community. See post 'Timeline' for change history
+Retrieved 2026-08-25, License - CC BY-SA 4.0  
+
+.shimmer {
+  color: grey;
+  display: inline-block;
+  mask: linear-gradient(-60deg, #000 30%, #0005, #000 70%) right/350% 100%;
+  animation: shimmer 2.5s infinite;
+  max-width: 200px;
+  
+}
+
+@keyframes shimmer {
+  100% {
+    mask-position: left
+  }
+}
+
+ */

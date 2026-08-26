@@ -45,3 +45,12 @@ function showPaper() {
   document.querySelector(".letterPaper").style.display = "flex";
 }
 
+let letterText;
+
+document.querySelector(".letterButton").onclick = function(event){
+    let letterDiv = event.target.closest(".letterTemplate");
+    let input = letterDiv.querySelector(".custom-input");
+    letterText = input.value;
+    document.getElementById("writtenLetter").textContent = `${letterText}`
+}
+
