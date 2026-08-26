@@ -16,6 +16,8 @@ body {
 }
 
 .letterTemplate {
+    margin-left: auto;
+    margin-right: auto;
     width: 600px;
     max-width: 100vw;
     display : flex;
