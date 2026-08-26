@@ -17,10 +17,11 @@ function scrollAgain(){
 }
 
 
-
 const eventSources = document.querySelectorAll(
     "#eventSources .eventTemplate"
 )
+
+randomEvent();
 
 function randomEvent() {
     const randomIndex = Math.floor(
