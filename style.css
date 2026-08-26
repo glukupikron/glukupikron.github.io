@@ -13,6 +13,8 @@ body {
 }
 
 .letterTemplate {
+    width: 600px;
+    max-width: 90vw;
     display : flex;
     justify-content: center;
     align-items: center;
@@ -49,7 +51,8 @@ body {
 .clipImage {
     /*clip-path: polygon(45% 34%, 46% 34%, 50% 85%, 48% 86%);*/
     clip-path: polygon(45% 35%, 46% 35%, 50% 85%, 48% 85%);
-    
+    max-width: 100%;
+    height: auto;
     
 }
 
@@ -59,12 +62,15 @@ body {
     position: relative;
     top: 10px;
     border: 1px solid;
+    max-width: 100%;
+    height: auto;
    
     
 }
 
 
 .letterPaper {
+    width: 100%
     justify-content: center;
     flex-direction: column;
     align-items: center;
@@ -73,6 +79,11 @@ body {
     cursor : pointer;
     display : none;
     position: relative
+}
+
+.letterPaper img {
+    max-width: 100%;
+    height: auto;
 }
 
 .letterButton {
