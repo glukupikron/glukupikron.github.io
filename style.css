@@ -1,5 +1,7 @@
 body {
+    margin: 0;
     padding: 40px;
+    box-sizing: border-box;
 }
 
 @media (max-width: 600px) {
@@ -16,10 +18,12 @@ body {
 }
 
 .letterTemplate {
-    margin-left: 0 auto;
-    margin-right: 0 auto;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+    position: relative;
     width: 600px;
-    max-width: 100vw;
+    max-width: 100%;
     display : flex;
     justify-content: center;
     align-items: center;
@@ -33,9 +37,11 @@ body {
 
 .clipGlow {
     filter: drop-shadow(0px 0px 0px rgb(255, 255, 255));
-    z-index: 1;
+    z-index: 2;
     position: absolute;
-    top: 57px;
+    top: 10px;
+    left: 9;
+    width: 100%;
     animation-name: Glow;
     animation-duration: 1s;
     animation-direction: alternate;
@@ -58,6 +64,8 @@ body {
     /*clip-path: polygon(45% 34%, 46% 34%, 50% 85%, 48% 86%);*/
     clip-path: polygon(45% 35%, 46% 35%, 50% 85%, 48% 85%);
     max-width: 100%;
+    display: block;
+    width: 100%;
     height: auto;
     
 }
@@ -76,7 +84,7 @@ body {
 
 
 .letterPaper {
-    width: 100%
+    width: 100%;
     justify-content: center;
     flex-direction: column;
     align-items: center;
@@ -84,7 +92,7 @@ body {
     font-family : 'Courier New', Courier, monospace; 
     cursor : pointer;
     display : none;
-    position: relative
+    position: relative;
 }
 
 .letterPaper img {
