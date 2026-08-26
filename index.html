@@ -8,19 +8,22 @@
   </head>
   <body>
 
+
+<div id = "eventSources" hidden>
+
     <!--편지 쓰기 div-->
     <div class = "eventTemplate letterTemplate" onclick = 'stopScroll()'>
       <img src = "use_image/letters.png" class = "lettersImage">
       <div class = "clipGlow">
-        <img src = "use_image/letters.png" class = "clipImage" onclick = 'showPaper()'>
-        <p style="text-align: center;"> Discover your paper to write on. </p>
+        <img src = "use_image/letters.png" class = "clipImage" >
+        <p class = "letterGuide"> Discover your paper to write on. </p>
       </div>
      
       <div class = "letterPaper">
        <img src = "use_image/paper-image.png">
-       <p id = writtenLetter>  </p>
+       <p class = "writtenLetter">  </p>
        <div class="input-wrapper">
-          <input
+          <input maxlength="280"
             class="custom-input"
             type="text"
             placeholder="Words..."
@@ -30,6 +33,12 @@
       </div>
    </div>
 
+   <!--다른 div들-->
+
+</div>
+
+<!--event area-->
+<div class = "eventArea"></div>
   
    
 

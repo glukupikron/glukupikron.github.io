@@ -1,17 +1,13 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
     padding: 40px;
     box-sizing: border-box;
 }
 
-@media (max-width: 600px) {
-    body {
-        padding: 10px;
-    }
-    .letterPaper {
-        width: 90vw;
-    }
-}
 
 .eventTemplate {
   font-family: 'Courier New', Courier, monospace;
@@ -22,8 +18,8 @@ body {
     margin-right: auto;
     box-sizing: border-box;
     position: relative;
-    width: 600px;
-    max-width: 100%;
+    width: 100%;
+    max-width: 600px;
     display : flex;
     justify-content: center;
     align-items: center;
@@ -35,48 +31,54 @@ body {
     
 }
 
-.clipGlow {
-    filter: drop-shadow(0px 0px 0px rgb(255, 255, 255));
-    z-index: 2;
-    position: absolute;
-    top: 10px;
-    left: 9;
-    width: 100%;
-    animation-name: Glow;
-    animation-duration: 1s;
-    animation-direction: alternate;
-    animation-iteration-count: infinite;
-    animation-timing-function: ease-in; 
-    /*위치 퍼센테이지로 맞춰야함*/
-}
 
 @keyframes Glow {
     from {
         filter: drop-shadow(0px 0px 0px rgb(255, 255, 255));
+        -webkit-filter: drop-shadow(0 0 0 white);
     }
     to {
         filter: drop-shadow(0px 0px 15px rgb(255, 255, 255));
+        -webkit-filter: drop-shadow(0 0 15px white);
     }
 }
 
+.letterGuide {
+    text-align: center;
+    font-size: 14px;
+}
 
+.clipGlow {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    z-index: 2;
+    width: 100%;
+    filter: drop-shadow(0 0 0 white);
+    -webkit-filter: drop-shadow(0 0 0 white);
+
+    animation: Glow 1s ease-in infinite alternate;
+}
 .clipImage {
     /*clip-path: polygon(45% 34%, 46% 34%, 50% 85%, 48% 86%);*/
+    
     clip-path: polygon(45% 35%, 46% 35%, 50% 85%, 48% 85%);
-    max-width: 100%;
     display: block;
     width: 100%;
     height: auto;
+    
+
     
 }
 
 .lettersImage {
   
     z-index: 1;
+    display: block;
     position: relative;
     top: 10px;
     border: 1px solid;
-    max-width: 100%;
+    width: 100%;
     height: auto;
    
     
@@ -97,6 +99,7 @@ body {
 
 .letterPaper img {
     max-width: 100%;
+    width: 100%;
     height: auto;
 }
 
@@ -133,21 +136,27 @@ body {
 
 
 /* letter box 편지 내용*/
-#writtenLetter {
+.writtenLetter {
     position: absolute;
-    top: 0;
+    inset: 0;
+    box-sizing: border-box;
+    margin: 0;
     font-family : 'Courier New', Courier, monospace;
-    padding-top : 110px;
-    padding-left: 110px;
+    padding-top : 21%;
+    padding-left: 15%;
+    padding-right: 1%;
     font-size: 20px;
     align-self: flex-start;
+    width: 600px;
+    max-width: 100%;
     white-space: normal;
     line-height: 1.6;
+
 }
 
 
 .debris {
-    width: 100vw;
+    width: 100%;
     height: 100vh;
 }
 
@@ -191,7 +200,7 @@ body {
 .input-wrapper {
   position: absolute;
   
-  top: 400px;
+  top: 87%;
   width: var(--input-width);
   display: flex;
   flex-direction: row;
@@ -222,7 +231,30 @@ body {
 }
 
 
+/*모바일의 경우*/
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+    .letterPaper {
+        width: 90vw;
+    }
+    #testdebris {
+        left: auto;
+        right: 0;
+    }
 
+    .writtenLetter {
+        inset: 0;
+        width: auto;
+        box-sizing: border-box;
+        margin: 0;
+        padding-top : 20%;
+        padding-left: 15%;
+        padding-right: 1%;
+        font-size: 14px;
+    }
+}
 
 
 

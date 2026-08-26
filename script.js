@@ -4,7 +4,7 @@ function autoScroll(){
   window.scrollBy(0,1);
 }
 
-runScroll = setInterval(autoScroll, 20);
+runScroll = setInterval(autoScroll, 25);
 
 
 function stopScroll(){
@@ -12,17 +12,28 @@ function stopScroll(){
 }
 
 function scrollAgain(){
-    autoScroll();
-    setInterval(autoScroll, 20);
+   clearInterval(runScroll);
+    runScroll = setInterval(autoScroll, 20);
 }
 
 
-function randomEvent(){
-    let saveEvents = document.querySelectorAll(".eventTemplate");
-    let whichEvent = Math.floor(Math.random()*saveEvents.length);
-    let actEvent = saveEvents[whichEvent]
-    let newEvent = actEvent.cloneNode(true);
-    /* appendchild 다음부터 */
+
+const eventSources = document.querySelectorAll(
+    "#eventSources .eventTemplate"
+)
+
+function randomEvent() {
+    const randomIndex = Math.floor(
+        Math.random() * eventSources.length);
+    
+        const selectedSource = eventSources[randomIndex];
+
+        const newEvent = selectedSource.cloneNode(true);
+
+        const eventArea = document.querySelector(".eventArea");
+
+        eventArea.appendChild(newEvent);
+    
 }
 
 
@@ -38,19 +49,33 @@ const $debris = document.querySelector(".debris");
 const maxSize = Math.max(window.innerWidth, window.innerHeight);
 
 
-function showPaper() {
-  document.querySelector(".clipGlow").style.display = "none";
-  document.querySelector(".clipImage").style.display = "none";
-  document.querySelector(".lettersImage").style.display = "none";
-  document.querySelector(".letterPaper").style.display = "flex";
-}
+document.addEventListener("click", function (event) {
+    const clipImage = event.target.closest(".clipImage");
 
-let letterText;
+    if (clipImage) {
+        const specificLetter = clipImage.closest(".letterTemplate");
 
-document.querySelector(".letterButton").onclick = function(event){
-    let letterDiv = event.target.closest(".letterTemplate");
-    let input = letterDiv.querySelector(".custom-input");
-    letterText = input.value;
-    document.getElementById("writtenLetter").textContent = `${letterText}`
-}
+        specificLetter.querySelector(".clipGlow").style.display = "none";
+
+        specificLetter.querySelector(".lettersImage").style.display = "none";
+
+        specificLetter.querySelector(".letterPaper").style.display = "flex";
+
+        return;
+    }
+
+    const writeButton = event.target.closest(".letterButton");
+
+    if (writeButton) { 
+        const specificLetter = writeButton.closest(".letterTemplate");
+
+        const input = specificLetter.querySelector(".custom-input");
+
+        const writtenLetter = specificLetter.querySelector(".writtenLetter");
+
+        writtenLetter.textContent = input.value;
+
+    }
+});
+
 
