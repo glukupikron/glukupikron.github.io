@@ -124,4 +124,66 @@ document.addEventListener("click", function (event) {
     }
 });
 
+// 글자 랜덤 
 
+const field = document.querySelector('.wordsField');
+
+function createDiv(count) {
+  
+  const writtenLetters = document.querySelectorAll(".eventArea .writtenLetter");
+
+  const sentence = [...writtenLetters]
+    .map(function (writtenLetter) {
+        return writtenLetter.textContent;
+    })
+    .join(" ")
+    .trim();
+
+
+
+
+  if (sentence === "") { return; }
+
+    const words = sentence.split(/\s+/);
+
+  const appearDelay = 700; 
+
+  const wordCount = Math.min(count, 30);
+  
+  for (let i = 0; i < wordCount; i++) {
+    setTimeout(function () {
+    const newDiv = document.createElement('div');
+
+    newDiv.className = "scatteredWord";
+    const randomIndex = Math.floor(Math.random() * words.length);
+    const randomWord =  words[randomIndex];
+
+    newDiv.textContent = randomWord;
+
+     field.appendChild(newDiv);
+
+    // 화면 좌표에 박는 법
+	
+    const xMax = Math.max(0, window.innerWidth - newDiv.offsetWidth);
+    const yMax = Math.max(0, window.innerHeight - newDiv.offsetHeight);
+    
+    const x = window.scrollX + randomNumber(0, xMax);
+    const y = window.scrollY + randomNumber(0, yMax);
+    
+
+    newDiv.style.position = 'absolute';
+    newDiv.style.left = `${x}px`;
+    newDiv.style.top = `${y}px`;
+    
+   
+  }, i* appearDelay);
+ }
+}
+
+function randomNumber(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+// if 하고 몇번 반복될지 
+// 편지 쓰고 시간이 좀 지나면? 랜덤 시작하기로 하자. 랜덤 주기로 소환 
+// const start = performance.now();  https://programming-bellybutton.tistory.com/87 
