@@ -13,8 +13,8 @@ body::before {
        -45deg,
         #eee2b1,
         #f5e4c5,
-        #ddf0f5
-        /*#f3b6d4 컬러 아카이브*/);
+        #cae2ea
+        /*#f3b6d4 #ddf0f5 컬러 아카이브*/);
 
         background-size:
         200px 200px,
@@ -323,8 +323,11 @@ body {
     }
 
     .input-wrapper {
-        bottom: 5px;
+        top: 84%;
+        width: 330px;
     }
+
+
 
     .wordsField {
         max-width: 100%;
