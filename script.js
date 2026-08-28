@@ -49,6 +49,48 @@ window.addEventListener('scroll',() => {
 const $debris = document.querySelector(".debris");
 const maxSize = Math.max(window.innerWidth, window.innerHeight);
 
+// debris 애니메이션
+const debrisImages = [
+    "use_image/debrispsd_22.png",
+    "use_image/debrispsd_34.png",
+    "use_image/debrispsd_37.png",
+    "use_image/debrispsd_45.png",
+    "use_image/debrispsd_53.png",
+    "use_image/debrispsd_57.png",
+    "use_image/debrispsd_63.png",
+    "use_image/debrispsd_65.png"
+];
+
+const randomImageIndex = Math.floor(Math.random() * debrisImages.length);
+
+const selectedImage = debrisImages[randomImageIndex];
+
+//debris 생성 등
+
+function createDebris(count) {
+    for (let i = 0; i <count; i++) {
+        const particle = document.createElement("img");
+        const randomIndex = Math.floor(randomNumber(0, debrisImages.length));
+
+        particle.src = debrisImages[randomIndex];
+        // 클래스 네임 붙이기
+        particle.className = "debrisParticle";
+
+        particle.style.left = `${randomNumber(0, 90)}vw`;
+        particle.style.width = `${randomNumber(15, 30)}px`;
+        particle.style.animationDuration = `${randomNumber(8, 20)}s`;
+        particle.style.animationDelay =  `${randomNumber(0, 3)}s`;
+
+        particle.onclick = scrollAgain;
+        $debris.appendChild(particle);
+
+
+    }
+}
+
+function clearDebris() { $debris.replaceChildren(); }
+
+
 
 // 글자 애니메이션
 
@@ -93,8 +135,19 @@ anime.timeline({loop: false})
 }
 
 // 편지찾기 click
+
+
 document.addEventListener("click", function (event) {
+    const clickedTemplate = event.target.closest(".eventTemplate");
+
     const clipImage = event.target.closest(".clipImage");
+
+    if ( 
+    clickedTemplate && !clickedTemplate.classList.contains("interacted")
+){
+    clearDebris();
+    clickedTemplate.classList.add("interacted");
+}
 
     if (clipImage) {
         const specificLetter = clipImage.closest(".letterTemplate");
@@ -195,8 +248,45 @@ function scheduleRandom(action, minDelay, maxDelay) {
         }, randomDelay );
 }
 
-// 글자 나타나는 간격
+//편지 저장 단어 나타나는 간격
 scheduleRandom(createDiv, 1*60*1000, 3*60*1000);
+
+
+
+// collect coins
+let coins = 0;
+let coinHideTimer;
+
+const coinImage = document.querySelector(".coinImage");
+
+function showCoin() {
+    coinImage.classList.add("isVisible");
+
+    clearTimeout(coinHideTimer);
+
+    coinHideTimer = setTimeout(function() {
+        coinImage.classList.remove("isVisible");}, 7*1000);
+}
+
+function collectCoins(){
+
+    if(!coinImage.classList.contains("isVisible")) {return;}
+
+    coins++;
+    coinImage.classList.remove("isVisible");
+
+    console.log(coins);
+
+    alert("You've got a coin!")
+}
+
+coinImage.addEventListener( "click", collectCoins)
+
+setTimeout(function() {
+    showCoin();
+    scheduleRandom(showCoin, 1*60*1000, 1.2*60*1000 );
+}, 1*60*1000);
+
 
 
 // if 하고 몇번 반복될지 
