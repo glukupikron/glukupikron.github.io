@@ -124,11 +124,11 @@ document.addEventListener("click", function (event) {
     }
 });
 
-// 글자 랜덤 
+// 편지 출처 글자 랜덤 
 
 const field = document.querySelector('.wordsField');
 
-function createDiv(count) {
+function createDiv() {
   
   const writtenLetters = document.querySelectorAll(".eventArea .writtenLetter");
 
@@ -146,9 +146,9 @@ function createDiv(count) {
 
     const words = sentence.split(/\s+/);
 
-  const appearDelay = 700; 
+  const appearDelay = 800; 
 
-  const wordCount = Math.min(count, 30);
+  const wordCount =  Math.floor(Math.random() * 30) + 1;
   
   for (let i = 0; i < wordCount; i++) {
     setTimeout(function () {
@@ -180,10 +180,26 @@ function createDiv(count) {
  }
 }
 
+// 랜덤 시간에 나타나는 함수 원본 - ScheduleRandom
+
 function randomNumber(min, max) {
   return Math.random() * (max - min) + min;
 }
 
+function scheduleRandom(action, minDelay, maxDelay) {
+    const randomDelay = Math.floor( Math.random() * (maxDelay - minDelay) + minDelay);
+
+    setTimeout (function () {
+        action();
+        scheduleRandom(action, minDelay, maxDelay);
+        }, randomDelay );
+}
+
+// 글자 나타나는 간격
+scheduleRandom(createDiv, 1*60*1000, 3*60*1000);
+
+
 // if 하고 몇번 반복될지 
-// 편지 쓰고 시간이 좀 지나면? 랜덤 시작하기로 하자. 랜덤 주기로 소환 
-// const start = performance.now();  https://programming-bellybutton.tistory.com/87 
+// 편지 쓰고 시간이 좀 지나면? 랜덤 시작하기로 하자. 랜덤 주기로 소환 / 언제까지?
+// const start = performance.now();  https://programming-bellybutton.tistory.com/87
+// debris는 css trick에서 찾아보자. 뭔가 css sprite로 하면 될 거 같음.  

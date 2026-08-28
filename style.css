@@ -77,12 +77,12 @@ body {
 
 @keyframes Glow {
     from {
-        filter: drop-shadow(0px 0px 0px rgb(255, 255, 255));
-        -webkit-filter: drop-shadow(0 0 0 white);
+        filter: drop-shadow(0px 0px 0px rgb(83, 196, 248));
+        -webkit-filter: drop-shadow(0 0 0 rgb(83, 196, 248));
     }
     to {
-        filter: drop-shadow(0px 0px 15px rgb(255, 255, 255));
-        -webkit-filter: drop-shadow(0 0 15px white);
+        filter: drop-shadow(0px 0px 20px rgb(83, 196, 248));
+        -webkit-filter: drop-shadow(0 0 20px rgb(83, 196, 248));
     }
 }
 
@@ -100,7 +100,7 @@ body {
     filter: drop-shadow(0 0 0 white);
     -webkit-filter: drop-shadow(0 0 0 white);
 
-    animation: Glow 1s ease-in infinite alternate;
+    animation: Glow 2s ease-in infinite alternate;
 }
 .clipImage {
     /*clip-path: polygon(45% 34%, 46% 34%, 50% 85%, 48% 86%);*/
