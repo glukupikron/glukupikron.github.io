@@ -288,8 +288,110 @@ setTimeout(function() {
 }, 1*60*1000);
 
 
+// 원경 게임 1
+// 고양이 선택지 게임 (선택지1: 사료, 선택지2: 이슬, 선택지3: 마법의 캣닢)
+
+let tabakoNum = 0;
+let flavors = ["matcha", "strawberry", "rice"];
+let whichFlavor = null;
+
+/* 사료 선택 시 */
+function nekoButton1(button){
+    whichFlavor = flavors[Math.floor(Math.random() * flavors.length)];
+    const nekoRow = button.closest(".nekoRow2");
+    nekoRow.textContent = `The Sacred Cat gave you a sacred ice cream. which is a ${whichFlavor} flavor`;
+    }
+
+
+
+/* 이슬 선택 시 */ 
+function nekoButton2(button){
+    const nekoRow = button.closest(".nekoRow2");
+    nekoRow.innerHTML = "The Sacred Cat is mad at you. <br>It doesn't give a shit about the 'dew.' <br>You decided to leave.";
+}
+
+/* 마법의 캣닢 선택 시 */
+function nekoButton3(button){
+    tabakoNum ++;
+    const nekoRow = button.closest(".nekoRow2");
+    nekoRow.innerHTML = "The Sacred Cat hands over a delicious cigarette. <br> It seems glad with the fantastic catnip it got from you.";
+
+}
+
+/* 담배는 여러 대 필 수 있고, 아이스크림은 row로 쌓이게?*/
+
+
+
+function smoking (puff) {
+    let currentSmokingImage = 0;
+    
+    const tabakoBox = puff.closest(".tabakoImage");
+    tabakoBox.src = "use_image/ta_2.png";
+
+    
+}
+
+const smokingImages = [
+    "use_image/ta_1.png",
+    "use_image/ta_2.png",
+    "use_image/ta_3.png",
+    "use_image/ta_4.png",
+    "use_image/ta_5.png",
+    "use_image/ta_6.png",
+    "use_image/ta_7.png",
+    "use_image/ta_8.png",
+    "use_image/ta_9.png",
+    "use_image/ash.png"
+    
+];
+
+
+
 
 // if 하고 몇번 반복될지 
 // 편지 쓰고 시간이 좀 지나면? 랜덤 시작하기로 하자. 랜덤 주기로 소환 / 언제까지?
 // const start = performance.now();  https://programming-bellybutton.tistory.com/87
 // debris는 css trick에서 찾아보자. 뭔가 css sprite로 하면 될 거 같음.  
+
+
+/*
+ 조건 검사는 별도 함수로 만들고 선택 직후 호출하는 게 좋다.
+function checkFlavor() {
+    if (whichFlavor === "matcha") {
+        console.log("matcha!");
+    }
+
+    if (whichFlavor === "strawberry") {
+        console.log("strawberry!");
+    }
+
+    if (whichFlavor === "rice") {
+        console.log("rice!");
+    }
+}
+그리고:
+function nekoButton1(button) {
+    whichFlavor =
+        flavors[
+            Math.floor(Math.random() * flavors.length)
+        ];
+
+    tabakoNum++;
+
+    const nekoRow =
+        button.closest(".nekoRow2");
+
+    nekoRow.textContent =
+        `The Sacred Cat gave you a ${whichFlavor} ice cream.`;
+
+    checkFlavor();
+}
+이렇게 해야 맛을 선택한 직후 조건을 검사해.
+정리하면:
+let tabakoNum = 0;
+let whichFlavor = null;
+는 함수 밖에서 선언하고:
+tabakoNum++;
+whichFlavor = 랜덤으로 선택한 맛;
+은 함수 안에서 값을 변경하면 돼. 새로고침 전까지 다른 함수에서도 두 값을 사용할 수 있어.
+ */

@@ -20,18 +20,24 @@
       <img src = "use_image/nekoDither2.png">
     </div>
     <div class="nekoRow2">
-      You've spotted a sacred Cat named Neko.<br>
+      While you wait, you've spotted a sacred Cat named Neko.
       what would you offer?
       <br><br>
-      <input type="button" class="nekoButton1" onclick="alert('클릭!')">
-      <input type="button" class="nekoButton2" onclick="alert('클릭!')">
-      <input type="button" class="nekoButton3" onclick="alert('클릭!')">
+      <input type="button" class="nekoButton1" onclick="nekoButton1(this)">
+      <input type="button" class="nekoButton2" onclick="nekoButton2(this)">
+      <input type="button" class="nekoButton3" onclick="nekoButton3(this)">
     </div>
 </div>
     
 
 <!--코인 구역-->
 <div class = "coinImage"></div>
+
+<!-- 담배 구역-->
+ <div class = "tabakoImage">
+  <img src = "use_image/ta_1.png">
+  <button class = puffButton onclick = smoking(this);>Puff!</button>
+ </div>
 
 <!--이벤트 소스-->
 <div id = "eventSources" hidden>
