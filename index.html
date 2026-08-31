@@ -14,19 +14,27 @@
 
 <!--테스트 구역-->
 
-
+<!--고양이-->
 <div class="eventTemplate nekoGrid" onclick = 'stopScroll()'>
     <div class="nekoRow1">
       <img src = "use_image/nekoDither2.png">
     </div>
     <div class="nekoRow2">
-      While you wait, you've spotted a sacred Cat named Neko.
+      While you wait, you’ve spotted a Sacred Cat named Neko.
       what would you offer?
       <br><br>
       <input type="button" class="nekoButton1" onclick="nekoButton1(this)">
       <input type="button" class="nekoButton2" onclick="nekoButton2(this)">
       <input type="button" class="nekoButton3" onclick="nekoButton3(this)">
     </div>
+</div>
+
+<!--하나비 구역-->
+<div class ="hanabi">
+  <div class="hanabiRow1">
+    
+  </div>
+  <div class="hanabiRow2"></div>
 </div>
     
 
@@ -36,8 +44,10 @@
 <!-- 담배 구역-->
  <div class = "tabakoImage">
   <img src = "use_image/ta_1.png">
-  <button class = puffButton onclick = smoking(this);>Puff!</button>
+  <button class = puffButton onclick = "event.stopPropagation(); smoking(this); scrollAgain();">Puff!</button>
  </div>
+
+
 
 <!--이벤트 소스-->
 <div id = "eventSources" hidden>

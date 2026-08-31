@@ -370,17 +370,39 @@ body {
 
 .tabakoImage {
   position: fixed;
+  width: 80px;
   top: 10%;
-  right: 20px;
-  display: flex;
+  right: 3%;
+  display: none;
   flex-direction: column;
 
   cursor: pointer;
+
+  
+}
+
+.tabakoImage.isVisible {
+    display: flex;
+}
+
+.tabakoImage img {
+    width: 100%;
+    height: auto;
+}
+
+.ashTrace {
+    position: absolute;
+    width: 200px;
+    height: auto;
+    z-index: 2;
+    pointer-events: none;
+    
 }
 
 .puffButton {
     width: 80px;
     height: 34px;
+    
     background: #f1b2a9;
     color: #ffffff;
     font-family: 'Courier New', monospace;
@@ -390,6 +412,8 @@ body {
     border-width: 1.6px;
     border-color: #bb6650;
     border-style: dotted;
+
+    margin-top: 10px;
     padding: 5px;
     cursor: pointer;
     display: inline-flex;
@@ -482,6 +506,33 @@ body {
     cursor: pointer;
 }
 
+/*하나비 그리드*/
+
+.hanabi {
+  
+  width: 100vw;
+  height: 500px;   
+  margin-left: -40px;
+  margin-bottom: 20px;
+  padding-bottom: 5px;
+  display: grid;
+  border: 1px solid;
+  border-color: rgb(198, 204, 206);
+  background-image: url(use_image/firework_capture.png);
+  background-repeat: repeat-x;
+  background-size: contain;
+  box-sizing: border-box;
+  place-items: center; 
+ 
+ 
+  grid-template-columns: 1fr; 
+  grid-template-rows: 1.8fr 0.2fr; 
+  gap: 0px 0px; 
+  grid-template-areas: 
+    "."
+    "."; 
+}
+
 /*모바일의 경우*/
 @media (max-width: 600px) {
     body {
@@ -544,6 +595,32 @@ body {
         height: 48px;
         background: url("use_image/saryo1.png") no-repeat;
         border: transparent;
+    }
+
+    .tabakoImage {
+        width: 60px;
+        right: 1%;
+
+    }
+
+    .puffButton {
+        margin-top: 10px;
+        width: 60px;
+        height: 34px;
+        padding: 0;
+        font-size: 13.5px;
+    }
+
+    .ashTrace {
+        width: 150px;
+    }
+
+    .hanabi {
+        margin-left: -10px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        background-repeat: repeat-y;
+        height: 800px;
     }
 
 

@@ -313,23 +313,66 @@ function nekoButton2(button){
 /* 마법의 캣닢 선택 시 */
 function nekoButton3(button){
     tabakoNum ++;
+
+    tabakoDisplay.classList.add("isVisible");
+
     const nekoRow = button.closest(".nekoRow2");
-    nekoRow.innerHTML = "The Sacred Cat hands over a delicious cigarette. <br> It seems glad with the fantastic catnip it got from you.";
+    nekoRow.innerHTML = "The Sacred Cat hands over a <b>delicious cigarette</b>. <br> It seems glad with the <span style='color:green;'><b>fantastic catnip</b></span> it got from you.";
 
 }
 
 /* 담배는 여러 대 필 수 있고, 아이스크림은 row로 쌓이게?*/
 
-
+const tabakoDisplay = document.querySelector(".tabakoImage");
 
 function smoking (puff) {
-    let currentSmokingImage = 0;
     
-    const tabakoBox = puff.closest(".tabakoImage");
-    tabakoBox.src = "use_image/ta_2.png";
+    if (tabakoNum <= 0) { return; }
 
+    tabakoNum--;
+    puff.disabled = true;
+
+    let currentSmokingImage = 0;
+
+    const tabakoBox = puff.closest(".tabakoImage");
+    const taImage = tabakoBox.querySelector("img");
     
+    const smokingTimer = setInterval(function() { 
+        currentSmokingImage++;
+
+        taImage.src = smokingImages[currentSmokingImage];
+
+        if ( currentSmokingImage === smokingImages.length -1 )
+        {   clearInterval(smokingTimer);
+
+            const ashPosition = taImage.getBoundingClientRect();
+            const ash = document.createElement("img");
+
+            ash.src = "use_image/ash.png";
+            ash.className = "ashTrace";
+
+            ash.style.left = `${ashPosition.left + window.scrollX - 30}px`;
+            ash.style.top = `${ashPosition.top + window.scrollY}px`;
+
+            document.body.appendChild(ash);
+            
+            taImage.src = smokingImages[0];
+            puff.disabled = false;
+
+            if (tabakoNum === 0) {
+            tabakoDisplay.classList.remove("isVisible");
+        }
+    
+        }
+        }, 2000);
+
+        
 }
+
+
+
+
+
 
 const smokingImages = [
     "use_image/ta_1.png",
