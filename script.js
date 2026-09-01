@@ -21,7 +21,7 @@ const eventSources = document.querySelectorAll(
     "#eventSources .eventTemplate"
 )
 
-randomEvent();
+
 
 function randomEvent() {
     const randomIndex = Math.floor(
@@ -34,6 +34,25 @@ function randomEvent() {
         const eventArea = document.querySelector(".eventArea");
 
         eventArea.appendChild(newEvent);
+
+        const puzzleBoard = newEvent.querySelector(".puzzleBoard");
+
+        if (puzzleBoard) {
+            const randomPuzzleIndex = Math.floor(Math.random() * puzzleSources.length);
+
+            const selectedPuzzle = puzzleSources[randomPuzzleIndex];
+
+            const puzzleGuide = newEvent.querySelector(".puzzleGuide");
+            puzzleGuide.textContent = selectedPuzzle.guide;
+
+            randomAlign(newEvent);
+            makePuzzle(
+                puzzleBoard,
+                selectedPuzzle.image,
+                selectedPuzzle.columns,
+                selectedPuzzle.rows
+            );
+        }
     
 }
 
@@ -372,8 +391,6 @@ function smoking (puff) {
 
 
 
-
-
 const smokingImages = [
     "use_image/ta_1.png",
     "use_image/ta_2.png",
@@ -388,6 +405,203 @@ const smokingImages = [
     
 ];
 
+// hanabi
+
+function selectHanabi(select) {
+    const hanabi = select.closest(".hanabi");
+    if (select.value === "yes") {
+        setTimeout(function() {
+            hanabi.style.backgroundImage = 'url("use_image/firework_umzzal.gif")';
+        },5000)
+        
+    }
+
+    if (select.value === "no") {
+        scrollAgain();
+    }
+}
+
+// 랜덤 align
+
+function randomAlign(element) {
+    element.style.alignItems = 
+    [ "flex-start", "center", "flex-end"]
+    [Math.floor(Math.random()* 3)];
+}
+
+// 퍼즐들
+// 후아힌은 600 900 아파트 1000 500 reflect 는 300 400
+const puzzleSources = [
+    {
+        image: "use_image/treepuzzle.gif",
+        guide: "Is that you? Over there?",
+        columns: 2,
+        rows: 2,
+    },
+     {
+        image : "use_image/tunnelpuzzle.gif",
+        guide : "Is that you? Over there?",
+        columns: 2,
+        rows: 3
+    },
+    {
+        image : "use_image/huahinpuzzle.gif",
+        guide : "I can almost hear you!",
+        columns: 2,
+        rows: 3
+    },
+    {
+        image : "use_image/apartpuzzle.gif",
+        guide : "The lights are moving...",
+        columns: 4,
+        rows: 2
+    },
+    {
+        image : "use_image/reflectpuzzle.gif",
+        guide : "Seemingly no one's there.",
+        columns: 3,
+        rows: 4
+    }
+];
+
+function makePuzzle(
+    puzzleBoard,
+    selectedImage,
+    puzzleColumns,
+    puzzleRows
+) {
+    const boardColumns = 4;
+    
+   
+    const pieceCount = puzzleColumns * puzzleRows;
+
+    const availablePositions = [];
+
+    for (let y = 0; y < boardColumns; y++) {
+        for (let x = 0; x < boardColumns; x++) {
+            availablePositions.push({
+                x: x,
+                y: y
+            });
+        }
+    }
+
+    for (let i=0; i < pieceCount; i++) {
+        const item = document.createElement("div");
+        const tile = document.createElement("div");
+
+        const randomPositionIndex = Math.floor(
+            Math.random() * availablePositions.length
+        );
+
+        const startPosition =
+        availablePositions.splice(randomPositionIndex,1)[0];
+
+        item.className = "grid-stack-item";
+
+        tile.className = "grid-stack-item-content puzzleTile";
+
+        item.setAttribute(
+            "gs-x", startPosition.x
+        );
+
+        item.setAttribute(
+            "gs-y", startPosition.y
+        );
+
+        item.setAttribute("gs-w", 1);
+        item.setAttribute("gs-h", 1);
+
+        const row =  Math.floor(i / puzzleColumns);
+        const column =  i % puzzleColumns;
+        
+        item.dataset.pieceRow = row;
+        item.dataset.pieceColumn = column;
+
+        const backgroundX =  column * (100 / (puzzleColumns - 1));
+
+        const backgroundY =  row * (100 / (puzzleRows - 1));
+
+        tile.style.backgroundImage =  `url("${selectedImage}")`;
+        tile.style.backgroundSize = `${puzzleColumns * 100}% ${puzzleRows * 100}%`;
+        tile.style.backgroundPosition = `${backgroundX}% ${backgroundY}%`;
+
+        item.appendChild(tile);
+        puzzleBoard.appendChild(item);   
+
+    }
+    const grid = GridStack.init({
+            column: boardColumns,
+            minRow: boardColumns,
+            maxRow: boardColumns,
+            cellHeight: "auto",
+            margin: 0,
+            float: true,
+            disableResize: true,
+            animate: true
+        }, puzzleBoard);
+
+        grid.on("dragstart", function () {
+            stopScroll();
+        });
+        grid.on("dragstop", function () {
+
+             if (
+            puzzleBoard.dataset.completed === "true"
+        ) {
+            return;
+         }
+            const completed = checkPuzzle(puzzleBoard);
+            console.log(completed);
+
+            if (completed) {
+                puzzleBoard.dataset.completed = "true";
+                grid.setStatic(true);
+                createDebris(10);
+            }
+});
+
+}
+
+
+
+function checkPuzzle(puzzleBoard) {
+    const pieces = puzzleBoard.querySelectorAll(
+        ".grid-stack-item"
+    );
+
+    const firstPiece = 
+        puzzleBoard.querySelector(
+            '[data-piece-row = "0"][data-piece-column="0"]'
+        );
+    
+    const startX = firstPiece.gridstackNode.x;
+    const startY = firstPiece.gridstackNode.y;
+
+    for (const piece of pieces) {
+        const correctRow = Number(piece.dataset.pieceRow);
+        const correctColumn = Number(piece.dataset.pieceColumn);
+        const currentX = piece.gridstackNode.x;
+        const currentY = piece.gridstackNode.y;
+
+        if (
+            currentX !==  startX + correctColumn ||
+            currentY !== startY + correctRow
+        ) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+randomEvent();
+
+
+
+
+
+
 
 
 
@@ -395,46 +609,3 @@ const smokingImages = [
 // 편지 쓰고 시간이 좀 지나면? 랜덤 시작하기로 하자. 랜덤 주기로 소환 / 언제까지?
 // const start = performance.now();  https://programming-bellybutton.tistory.com/87
 // debris는 css trick에서 찾아보자. 뭔가 css sprite로 하면 될 거 같음.  
-
-
-/*
- 조건 검사는 별도 함수로 만들고 선택 직후 호출하는 게 좋다.
-function checkFlavor() {
-    if (whichFlavor === "matcha") {
-        console.log("matcha!");
-    }
-
-    if (whichFlavor === "strawberry") {
-        console.log("strawberry!");
-    }
-
-    if (whichFlavor === "rice") {
-        console.log("rice!");
-    }
-}
-그리고:
-function nekoButton1(button) {
-    whichFlavor =
-        flavors[
-            Math.floor(Math.random() * flavors.length)
-        ];
-
-    tabakoNum++;
-
-    const nekoRow =
-        button.closest(".nekoRow2");
-
-    nekoRow.textContent =
-        `The Sacred Cat gave you a ${whichFlavor} ice cream.`;
-
-    checkFlavor();
-}
-이렇게 해야 맛을 선택한 직후 조건을 검사해.
-정리하면:
-let tabakoNum = 0;
-let whichFlavor = null;
-는 함수 밖에서 선언하고:
-tabakoNum++;
-whichFlavor = 랜덤으로 선택한 맛;
-은 함수 안에서 값을 변경하면 돼. 새로고침 전까지 다른 함수에서도 두 값을 사용할 수 있어.
- */

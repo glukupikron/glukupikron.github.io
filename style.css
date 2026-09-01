@@ -269,6 +269,7 @@ body {
 }
 
 .testdebris {
+    margin-top: 2000px;
     border: 1px solid;
     width: 200px;
     height: 50px;
@@ -523,6 +524,8 @@ body {
   background-size: contain;
   box-sizing: border-box;
   place-items: center; 
+  font-family : 'Courier New', Courier, monospace;
+  text-align: center;
  
  
   grid-template-columns: 1fr; 
@@ -531,6 +534,107 @@ body {
   grid-template-areas: 
     "."
     "."; 
+}
+
+.hanabiRow2
+{
+    padding: 5px;
+    line-height: 1.4;
+}
+
+.hanabi:hover {
+  box-shadow:0 0 0 1600px rgba(0,0,0,0.65);/* dark around it */
+}
+
+
+/* 하나비 드롭다운 */
+:root {
+  --select-width: 84px;
+  --select-font-size: 16px;
+  --select-pad-x: 10px;
+  --select-pad-y: 0px;
+  --select-radius: 0px;
+  --select-bg: rgba(246,250,254,0.60);
+  --select-color: #111827;
+  --select-border: 1px dotted #d1d5db;
+  --select-focus-color: #acc5ec;
+  --select-arrow-color: #6b7280;
+  --select-arrow-size: 14px;
+}
+
+/* Styles */
+.select-wrapper {
+  position: relative;
+  display: inline-flex;
+  width: var(--select-width);
+}
+
+.custom-select {
+  width: 100%;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: var(--select-font-size);
+  padding: var(--select-pad-y) 36px var(--select-pad-y) var(--select-pad-x);
+  border-radius: var(--select-radius);
+  background: var(--select-bg);
+  color: var(--select-color);
+  border: var(--select-border);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.custom-select:focus {
+  border-color: var(--select-focus-color);
+  box-shadow: 0 0 0 2px rgba(172,197,236,0.35);
+}
+
+.select-arrow {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  width: var(--select-arrow-size);
+  height: var(--select-arrow-size);
+}
+
+/*퍼즐*/
+
+.puzzleTemplate {
+    width: 100%;
+    padding: 30px 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+
+    box-sizing: border-box;
+}
+
+.puzzleBoard {
+    width: min(90vw, 600px);
+    background-color:rgba(251, 243, 233, 0.2);
+    touch-action: none;
+}
+
+.puzzleTile {
+    background-repeat: no-repeat;
+    cursor: grab;
+    image-rendering: auto;
+    filter: blur(0.2px); 
+}
+
+.puzzleTile:active {
+    cursor: grabbing;
+}
+
+.puzzleGuide {
+    margin-top: 15px;
+    font-family: 'Courier New', Courier, monospace;
+    text-align: left;
 }
 
 /*모바일의 경우*/
@@ -621,6 +725,11 @@ body {
         margin-bottom: 20px;
         background-repeat: repeat-y;
         height: 800px;
+    }
+
+    .puzzleBoard {
+        width: 80vw;
+        
     }
 
 

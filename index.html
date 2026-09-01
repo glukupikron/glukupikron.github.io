@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@12.6.0/dist/gridstack.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>waiting</title>
   </head>
@@ -30,11 +31,23 @@
 </div>
 
 <!--하나비 구역-->
-<div class ="hanabi">
+<div class ="eventTemplate hanabi" onclick = 'stopScroll()'>
   <div class="hanabiRow1">
     
   </div>
-  <div class="hanabiRow2"></div>
+  <div class="hanabiRow2">
+    <span style = "background-color: rgba(255, 255, 255, 0.5)">Would you like to wait for the hanabi to start again?</span>
+    <div class="select-wrapper">
+      <select class="custom-select" onclick="event.stopPropagation()" onchange = "selectHanabi(this)">
+        <option value="" disabled selected>huh?</option>
+        <option>yes</option>
+        <option>no</option>
+      </select>
+      <div class="select-arrow">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="#6b7280" stroke="none"><polygon points="6,9 18,9 12,16"/></svg>
+  </div>
+</div>
+  </div>
 </div>
     
 
@@ -46,6 +59,11 @@
   <img src = "use_image/ta_1.png">
   <button class = puffButton onclick = "event.stopPropagation(); smoking(this); scrollAgain();">Puff!</button>
  </div>
+
+
+<!--퍼즐 테스트-->
+
+
 
 
 
@@ -76,6 +94,13 @@
 
    <!--다른 div들-->
 
+  <div class="eventTemplate puzzleTemplate" onclick="stopScroll()">
+    <div class = "puzzleBoard grid-stack"></div>
+    <p class = "puzzleGuide"></p>
+  </div>
+
+
+
 </div>
 
 
@@ -95,6 +120,7 @@
     <div class = "debris">
 
     </div>
+  <script src="https://cdn.jsdelivr.net/npm/gridstack@12.6.0/dist/gridstack-all.js"></script>  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.0.2/anime.min.js"></script>
   <script src="script.js"></script>
   </body>
