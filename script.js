@@ -336,7 +336,7 @@ function nekoButton3(button){
     tabakoDisplay.classList.add("isVisible");
 
     const nekoRow = button.closest(".nekoRow2");
-    nekoRow.innerHTML = "The Sacred Cat hands over a <b>delicious cigarette</b>. <br> It seems glad with the <span style='color:green;'><b>fantastic catnip</b></span> it got from you.";
+    nekoRow.innerHTML = "The Sacred Cat hands over a <b>delicious cigarette</b>. <br> It seems glad with the <span style='color:green;'><b>magical catnip</b></span> it got from you.";
 
 }
 
