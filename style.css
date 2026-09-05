@@ -51,7 +51,7 @@ body {
     box-sizing: border-box;
 }
 
-.startPart {
+.scrollStart {
     font-size: 20px;
     font-family: 'Courier New', Courier, monospace;
     font-style: oblique;
@@ -67,6 +67,7 @@ body {
 .letterTemplate {
     margin-left: auto;
     margin-right: auto;
+    margin-bottom: 200px;
     box-sizing: border-box;
     position: relative;
     width: 100%;
@@ -276,23 +277,6 @@ body {
     }
 }
 
-.testdebris {
-    margin-top: 2000px;
-    border: 1px solid;
-    width: 200px;
-    height: 50px;
-    font-family : 'Courier New', Courier, monospace;
-    cursor : pointer;
-
-}
-
-#testdebris {
-    position: absolute;
-    top: 900px;
-    left: 600px; 
-    background: gray;
-}
-
 
 /* CSS Variables - input */
 :root {
@@ -448,7 +432,7 @@ body {
 
   margin-left: 7%;
  
-  margin-bottom: 20px;
+  margin-bottom: 200px;
   padding-bottom: 5px;
   display: grid;
   border: 2px dotted;
@@ -522,7 +506,7 @@ body {
   width: 100vw;
   height: 500px;   
   margin-left: -40px;
-  margin-bottom: 20px;
+  margin-bottom: 200px;
   padding-bottom: 5px;
   display: grid;
   border: 1px solid;
@@ -614,6 +598,7 @@ body {
 .puzzleTemplate {
     width: 100%;
     padding: 30px 0;
+    margin-bottom: 200px;
 
     display: flex;
     flex-direction: column;
@@ -730,7 +715,7 @@ body {
     .hanabi {
         margin-left: -10px;
         margin-top: 20px;
-        margin-bottom: 20px;
+        margin-bottom: 50px;
         background-repeat: repeat-y;
         height: 800px;
     }

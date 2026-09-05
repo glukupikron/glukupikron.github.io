@@ -1,10 +1,15 @@
 let runScroll;
 
+function checkBottom () { 
+    const reachedBottom = window.scrollY + window.innerHeight >=
+    document.documentElement.scrollHeight - 1;
+
+    if (reachedBottom) { randomEvent(); }
+}
 function autoScroll(){
   window.scrollBy(0,1);
+  checkBottom();
 }
-
-runScroll = setInterval(autoScroll, 25);
 
 
 function stopScroll(){
@@ -15,6 +20,9 @@ function scrollAgain(){
    clearInterval(runScroll);
     runScroll = setInterval(autoScroll, 20);
 }
+
+window.addEventListener("scroll", checkBottom);
+
 
 
 const eventSources = document.querySelectorAll(
@@ -56,13 +64,6 @@ function randomEvent() {
     
 }
 
-
-
-window.addEventListener('scroll',() => {
-    if(window.scrollY + window.innerHeight >= document.documentElement.scrollHeight){
-        // 랜덤으로 호출하기 
-    }
-} )
 
 // debris 호출gg
 const $debris = document.querySelector(".debris");

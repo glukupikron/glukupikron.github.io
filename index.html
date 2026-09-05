@@ -9,16 +9,54 @@
   </head>
 
   <body>
-    <p class = "startPart">
-      “Am I in Love? — Yes, since I’m waiting.”
-    </p>
+    <div class = "scrollStart">
+      <p>“Am I in Love? — Yes, since I’m waiting.”</p>
+      <button onclick = "scrollAgain()">Yes</button>
+
+    </div>
     <section class = 'wordsField'>
 
     </section>
 
 <!--테스트 구역-->
 
-<!--고양이-->
+
+
+    
+
+
+
+
+
+
+<!--이벤트 소스-->
+<div id = "eventSources" hidden>
+
+    <!--편지 쓰기 div-->
+    <div class = "eventTemplate letterTemplate" onclick = 'stopScroll()'>
+      <img src = "use_image/letters.png" class = "lettersImage">
+      <div class = "clipGlow">
+        <img src = "use_image/letters.png" class = "clipImage" >
+        <p class = "letterGuide"> Discover your paper to write on. </p>
+      </div>
+     
+      <div class = "letterPaper">
+       <img src = "use_image/paper-image.png">
+       <p class = "writtenLetter">  </p>
+       <div class="input-wrapper">
+          <input maxlength="280"
+            class="custom-input"
+            type="text"
+            placeholder="Words..."
+          />
+          <button class = letterButton>write</button>
+      </div>
+      </div>
+   </div>
+
+   <!--다른 div들-->
+
+   <!--고양이-->
 <div class="eventTemplate nekoGrid" onclick = 'stopScroll()'>
     <div class="nekoRow1">
       <img src = "use_image/nekoDither2.png">
@@ -52,7 +90,6 @@
 </div>
   </div>
 </div>
-    
 
 <!--코인 구역-->
 <div class = "coinImage"></div>
@@ -65,38 +102,6 @@
 
 
 <!--퍼즐 테스트-->
-
-
-
-
-
-<!--이벤트 소스-->
-<div id = "eventSources" hidden>
-
-    <!--편지 쓰기 div-->
-    <div class = "eventTemplate letterTemplate" onclick = 'stopScroll()'>
-      <img src = "use_image/letters.png" class = "lettersImage">
-      <div class = "clipGlow">
-        <img src = "use_image/letters.png" class = "clipImage" >
-        <p class = "letterGuide"> Discover your paper to write on. </p>
-      </div>
-     
-      <div class = "letterPaper">
-       <img src = "use_image/paper-image.png">
-       <p class = "writtenLetter">  </p>
-       <div class="input-wrapper">
-          <input maxlength="280"
-            class="custom-input"
-            type="text"
-            placeholder="Words..."
-          />
-          <button class = letterButton>write</button>
-      </div>
-      </div>
-   </div>
-
-   <!--다른 div들-->
-
   <div class="eventTemplate puzzleTemplate" onclick="stopScroll()">
     <div class = "puzzleBoard grid-stack"></div>
     <p class = "puzzleGuide"></p>
@@ -112,13 +117,7 @@
   
    
 
-    <div style = "height: 10000px;"> 
-    
 
-    </div>
-    <div class = "testdebris" id = "testdebris" onclick = 'scrollAgain()'>
-        I'm a debris
-    </div>
 
     <div class = "debris">
 
