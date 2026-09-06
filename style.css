@@ -55,8 +55,9 @@ body {
     font-size: 20px;
     font-family: 'Courier New', Courier, monospace;
     font-style: oblique;
-    text-align: center;
-    height: 300px;
+    padding-top: 80px;
+    margin-left: 500px;
+    height: 700px;
 }
 
 
@@ -747,6 +748,10 @@ body {
 @media (max-width: 600px) {
     body {
         padding: 10px;
+    }
+    .scrollStart {
+        padding-top: 40px;
+        margin-left: 100px;
     }
     .letterPaper {
         width: 90vw;
