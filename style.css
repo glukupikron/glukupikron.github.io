@@ -12,9 +12,9 @@ body::before {
         linear-gradient(
        -45deg,
         #eee2b1,
-        #f5e4c5,
-        #cae2ea
-        /*#f3b6d4 #ddf0f5 컬러 아카이브*/);
+        #efede8,
+        #bcdde8
+        /*#f3b6d4 #ddf0f5 #f5e4c5 #cae2ea 컬러 아카이브*/);
 
         background-size:
         200px 200px,
