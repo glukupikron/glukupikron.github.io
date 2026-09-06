@@ -14,9 +14,24 @@
       <button onclick = "scrollAgain()">Yes</button>
 
     </div>
+    <!--단어 필드-->
     <section class = 'wordsField'>
 
     </section>
+
+    <button type="button" class="owariButton" onclick="owari()">
+      Done?
+    </button>
+
+<!--코인 구역-->
+<div class = "coinImage"></div>
+
+<!-- 담배 구역-->
+ <div class = "tabakoImage">
+  <img src = "use_image/ta_1.png">
+  <button class = puffButton onclick = "event.stopPropagation(); smoking(this); scrollAgain();">Puff!</button>
+ </div>
+
 
 <!--테스트 구역-->
 
@@ -91,14 +106,6 @@
   </div>
 </div>
 
-<!--코인 구역-->
-<div class = "coinImage"></div>
-
-<!-- 담배 구역-->
- <div class = "tabakoImage">
-  <img src = "use_image/ta_1.png">
-  <button class = puffButton onclick = "event.stopPropagation(); smoking(this); scrollAgain();">Puff!</button>
- </div>
 
 
 <!--퍼즐 테스트-->
@@ -122,8 +129,28 @@
     <div class = "debris">
 
     </div>
+
+
+    <div class = "owariModal" hidden>
+      <div class = "owariModalContent">
+        <p>Has the one you have been waiting for arrived?<br>You can take away your record of waiting.</p>
+
+        <div class = "owariModalButtons">
+          <button type = "button" onclick= "finishJourney()">
+            Yes
+          </button>
+          <button type="button" onclick="closeOwari()">
+            Not yet
+          </button>
+
+        </div>
+      </div>
+    </div>
+
+    
   <script src="https://cdn.jsdelivr.net/npm/gridstack@12.6.0/dist/gridstack-all.js"></script>  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.0.2/anime.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="script.js"></script>
   </body>
 
