@@ -8,17 +8,71 @@
     <title>waiting</title>
   </head>
 
+  <!--pre tag 써보기! scrollStart에-->
   <body>
-    <p class = "startPart">
-      “Am I in Love? — Yes, since I’m waiting.”
-    </p>
+    <div class = "scrollStart">
+      <p>Am I <br>&nbsp;&nbsp;&nbsp;in Love? <br>—<br><br><br> Yes, <br><br><br><br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;since I’m <br><br><br><br><br><br><br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; waiting.<br><br><br></p>
+      <button onclick = "scrollAgain()">Sure</button>
+
+    </div>
+    <!--단어 필드-->
     <section class = 'wordsField'>
 
     </section>
 
+    <button type="button" class="owariButton" onclick="owari()">
+      Done?
+    </button>
+
+<!--코인 구역-->
+<div class = "coinImage"></div>
+
+<!-- 담배 구역-->
+ <div class = "tabakoImage">
+  <img src = "use_image/ta_1.png">
+  <button class = puffButton onclick = "event.stopPropagation(); smoking(this); scrollAgain();">Puff!</button>
+ </div>
+
+
 <!--테스트 구역-->
 
-<!--고양이-->
+
+
+    
+
+
+
+
+
+
+<!--이벤트 소스-->
+<div id = "eventSources" hidden>
+
+    <!--편지 쓰기 div-->
+    <div class = "eventTemplate letterTemplate" onclick = 'stopScroll()'>
+      <img src = "use_image/letters.png" class = "lettersImage">
+      <div class = "clipGlow">
+        <img src = "use_image/letters.png" class = "clipImage" >
+        <p class = "letterGuide"> Discover your paper to write on. </p>
+      </div>
+     
+      <div class = "letterPaper">
+       <img src = "use_image/paper-image.png">
+       <p class = "writtenLetter">  </p>
+       <div class="input-wrapper">
+          <input maxlength="280"
+            class="custom-input"
+            type="text"
+            placeholder="Words..."
+          />
+          <button class = letterButton>write</button>
+      </div>
+      </div>
+   </div>
+
+   <!--다른 div들-->
+
+   <!--고양이-->
 <div class="eventTemplate nekoGrid" onclick = 'stopScroll()'>
     <div class="nekoRow1">
       <img src = "use_image/nekoDither2.png">
@@ -52,51 +106,10 @@
 </div>
   </div>
 </div>
-    
 
-<!--코인 구역-->
-<div class = "coinImage"></div>
-
-<!-- 담배 구역-->
- <div class = "tabakoImage">
-  <img src = "use_image/ta_1.png">
-  <button class = puffButton onclick = "event.stopPropagation(); smoking(this); scrollAgain();">Puff!</button>
- </div>
 
 
 <!--퍼즐 테스트-->
-
-
-
-
-
-<!--이벤트 소스-->
-<div id = "eventSources" hidden>
-
-    <!--편지 쓰기 div-->
-    <div class = "eventTemplate letterTemplate" onclick = 'stopScroll()'>
-      <img src = "use_image/letters.png" class = "lettersImage">
-      <div class = "clipGlow">
-        <img src = "use_image/letters.png" class = "clipImage" >
-        <p class = "letterGuide"> Discover your paper to write on. </p>
-      </div>
-     
-      <div class = "letterPaper">
-       <img src = "use_image/paper-image.png">
-       <p class = "writtenLetter">  </p>
-       <div class="input-wrapper">
-          <input maxlength="280"
-            class="custom-input"
-            type="text"
-            placeholder="Words..."
-          />
-          <button class = letterButton>write</button>
-      </div>
-      </div>
-   </div>
-
-   <!--다른 div들-->
-
   <div class="eventTemplate puzzleTemplate" onclick="stopScroll()">
     <div class = "puzzleBoard grid-stack"></div>
     <p class = "puzzleGuide"></p>
@@ -112,19 +125,33 @@
   
    
 
-    <div style = "height: 10000px;"> 
-    
 
-    </div>
-    <div class = "testdebris" id = "testdebris" onclick = 'scrollAgain()'>
-        I'm a debris
-    </div>
 
     <div class = "debris">
 
     </div>
+
+
+    <div class = "owariModal" hidden>
+      <div class = "owariModalContent">
+        <p>Has the one you have been waiting for arrived?<br>You can take away your record of waiting.</p>
+
+        <div class = "owariModalButtons">
+          <button type = "button" onclick= "finishJourney()">
+            Yes
+          </button>
+          <button type="button" onclick="closeOwari()">
+            Not yet
+          </button>
+
+        </div>
+      </div>
+    </div>
+
+    
   <script src="https://cdn.jsdelivr.net/npm/gridstack@12.6.0/dist/gridstack-all.js"></script>  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.0.2/anime.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="script.js"></script>
   </body>
 

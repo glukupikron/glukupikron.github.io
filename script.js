@@ -1,10 +1,15 @@
 let runScroll;
 
+function checkBottom () { 
+    const reachedBottom = window.scrollY + window.innerHeight >=
+    document.documentElement.scrollHeight - 1;
+
+    if (reachedBottom) { randomEvent(); }
+}
 function autoScroll(){
   window.scrollBy(0,1);
+  checkBottom();
 }
-
-runScroll = setInterval(autoScroll, 25);
 
 
 function stopScroll(){
@@ -15,6 +20,9 @@ function scrollAgain(){
    clearInterval(runScroll);
     runScroll = setInterval(autoScroll, 20);
 }
+
+window.addEventListener("scroll", checkBottom);
+
 
 
 const eventSources = document.querySelectorAll(
@@ -57,13 +65,6 @@ function randomEvent() {
 }
 
 
-
-window.addEventListener('scroll',() => {
-    if(window.scrollY + window.innerHeight >= document.documentElement.scrollHeight){
-        // 랜덤으로 호출하기 
-    }
-} )
-
 // debris 호출gg
 const $debris = document.querySelector(".debris");
 const maxSize = Math.max(window.innerWidth, window.innerHeight);
@@ -96,19 +97,42 @@ function createDebris(count) {
         particle.className = "debrisParticle";
 
         particle.style.left = `${randomNumber(0, 90)}vw`;
-        particle.style.width = `${randomNumber(15, 30)}px`;
-        particle.style.animationDuration = `${randomNumber(8, 20)}s`;
+        particle.style.width = `${randomNumber(15, 50)}px`;
+        particle.style.animationDuration = `${randomNumber(13, 30)}s`;
         particle.style.animationDelay =  `${randomNumber(0, 3)}s`;
 
-        particle.onclick = scrollAgain;
+        particle.onclick = function () {
+            stopPuzzleDebris();
+            clearDebris();
+            scrollAgain();
+        }
         $debris.appendChild(particle);
 
 
     }
 }
 
-function clearDebris() { $debris.replaceChildren(); }
+function clearDebris() { 
+    $debris.replaceChildren(); }
 
+let puzzleDebrisTimer;
+
+function startPuzzleDebris() {
+    stopPuzzleDebris ();
+
+    function showPuzzleDebris() {
+        createDebris(10);
+
+        puzzleDebrisTimer = setTimeout (showPuzzleDebris, 45000);
+    }
+
+    puzzleDebrisTimer = setTimeout(showPuzzleDebris, 30000);
+}
+
+function stopPuzzleDebris() {
+    clearTimeout(puzzleDebrisTimer);
+    puzzleDebrisTimer = undefined;
+}
 
 
 // 글자 애니메이션
@@ -193,6 +217,9 @@ document.addEventListener("click", function (event) {
             writtenLetter, input.value
         );
 
+        setTimeout(function () 
+        { scrollAgain();}, 10000);
+
     }
 });
 
@@ -268,7 +295,7 @@ function scheduleRandom(action, minDelay, maxDelay) {
 }
 
 //편지 저장 단어 나타나는 간격
-scheduleRandom(createDiv, 1*60*1000, 3*60*1000);
+scheduleRandom(createDiv, 1*30*1000, 1*60*1000);
 
 
 
@@ -319,6 +346,7 @@ function nekoButton1(button){
     whichFlavor = flavors[Math.floor(Math.random() * flavors.length)];
     const nekoRow = button.closest(".nekoRow2");
     nekoRow.textContent = `The Sacred Cat gave you a sacred ice cream. which is a ${whichFlavor} flavor`;
+    setTimeout(scrollAgain, 0);
     }
 
 
@@ -327,6 +355,7 @@ function nekoButton1(button){
 function nekoButton2(button){
     const nekoRow = button.closest(".nekoRow2");
     nekoRow.innerHTML = "The Sacred Cat is mad at you. <br>It doesn't give a shit about the 'dew.' <br>You decided to leave.";
+    setTimeout(scrollAgain, 0);
 }
 
 /* 마법의 캣닢 선택 시 */
@@ -337,6 +366,7 @@ function nekoButton3(button){
 
     const nekoRow = button.closest(".nekoRow2");
     nekoRow.innerHTML = "The Sacred Cat hands over a <b>delicious cigarette</b>. <br> It seems glad with the <span style='color:green;'><b>magical catnip</b></span> it got from you.";
+    setTimeout(scrollAgain, 0);
 
 }
 
@@ -412,7 +442,9 @@ function selectHanabi(select) {
     if (select.value === "yes") {
         setTimeout(function() {
             hanabi.style.backgroundImage = 'url("use_image/firework_umzzal.gif")';
-        },5000)
+        },3000);
+
+        setTimeout(function () { createDebris(15);}, 10000);
         
     }
 
@@ -543,6 +575,9 @@ function makePuzzle(
 
         grid.on("dragstart", function () {
             stopScroll();
+             if (puzzleBoard.dataset.debrisStarted !== "true") {
+                 puzzleBoard.dataset.debrisStarted = "true";
+                 startPuzzleDebris();}
         });
         grid.on("dragstop", function () {
 
@@ -557,6 +592,9 @@ function makePuzzle(
             if (completed) {
                 puzzleBoard.dataset.completed = "true";
                 grid.setStatic(true);
+                
+                stopPuzzleDebris();
+                clearDebris();
                 createDebris(10);
             }
 });
@@ -597,7 +635,50 @@ function checkPuzzle(puzzleBoard) {
 
 randomEvent();
 
+const owariModal = document.querySelector(".owariModal");
 
+function owari() {
+    stopScroll();
+    owariModal.hidden = false;
+}
+
+function closeOwari() {
+    owariModal.hidden = true;
+    scrollAgain;
+}
+
+async function captureJourney() {
+    const eventArea = document.querySelector(".eventArea");
+    
+    const canvas = await html2canvas(eventArea, {
+        useCORS: true,
+        backgroundColor: "#f5e4c5",
+        scale: 1
+    });
+    
+    return canvas;
+}
+
+function downloadJourney(canvas) {
+    const downloadLink = document.createElement("a");
+
+    downloadLink.download = `waiting-${Date.now()}.png`;
+    downloadLink.href = canvas.toDataURL("image/png");
+
+    downloadLink.click();
+}
+
+async function finishJourney() {
+    try {
+        const canvas = await captureJourney();
+
+        downloadJourney(canvas);
+        owariModal.hidden = true;
+    } catch (error) {
+        console.error(error);
+        alert("The image cannot be created.");
+    }
+}
 
 
 
