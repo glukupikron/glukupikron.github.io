@@ -453,6 +453,58 @@ function selectHanabi(select) {
     }
 }
 
+// jukebox
+
+function chooseTrackButton(button){
+    const jukeRow = button.closest(".jukeRow2");
+
+    if (coins >= 1) {
+    jukeRow.innerHTML = `
+    <input type="button" value = "You are staring at a copy machine." class="track1" onclick="playTrack1(this)">
+    <input type="button" value = "You are walking down the street." class="track2" onclick="playTrack2(this)">
+    <input type="button" value = "You are near the hospital." class="track3" onclick="playTrack3(this)">`;
+    
+    coins --;
+
+    }
+
+    else {
+    jukeRow.innerHTML = `<span>You should earn a <b>precious coin</b> to play.<br> That’s too obvious!</span>`
+    setTimeout(scrollAgain, 0);     
+}
+}
+
+function playTrack1(button){
+    const jukeRow = button.closest(".jukeRow2");
+    jukeRow.innerHTML = `
+    <audio src="audio/waiting_copy2.mp3" controls autoplay></audio>`
+    
+    const audio = jukeRow.querySelector("audio");
+    audio.volume = 0.6;
+
+    setTimeout(scrollAgain, 0);
+}
+
+function playTrack2(button){
+    const jukeRow = button.closest(".jukeRow2");
+    jukeRow.innerHTML = `
+    <audio src="audio/waiting_dingdong.mp3" controls autoplay></audio>`
+    
+    const audio = jukeRow.querySelector("audio");
+    audio.volume = 0.6;
+    setTimeout(scrollAgain, 0);
+}
+
+function playTrack3(button){
+    const jukeRow = button.closest(".jukeRow2");
+    jukeRow.innerHTML = `
+    <audio src="audio/waiting_haisha.mp3" controls autoplay></audio>`
+    
+    const audio = jukeRow.querySelector("audio");
+    audio.volume = 0.6;
+    setTimeout(scrollAgain, 0);
+}
+
 // 랜덤 align
 
 function randomAlign(element) {
