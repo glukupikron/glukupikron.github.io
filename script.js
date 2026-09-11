@@ -469,7 +469,7 @@ function chooseTrackButton(button){
     }
 
     else {
-    jukeRow.innerHTML = `<span>You should earn a <b>precious coin</b> to play.<br> That’s too obvious!</span>`
+    jukeRow.innerHTML = `<span>You should earn a <b>precious coin</b> to play.<br> That’s so obvious!</span>`
     setTimeout(scrollAgain, 0);     
 }
 }
