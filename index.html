@@ -18,12 +18,16 @@
       
       <div class="doortext">
         Am I <br>&nbsp;&nbsp;&nbsp;in Love? <br>—<br><br><br> Yes, <br><br><br><br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;since I’m <br><br><br><br><br><br><br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; waiting.<br><br><br>
-      <button class="startButton" onclick = "scrollAgain()">Sure</button>
+      <button class="startButton" onclick = "scrollAgain(); startPopupTimer()">Sure</button>
       </div>
+      
       
         
 
     </div>
+    <div class = "sphereField">
+        <div class = "sphere"></div>
+      </div>
     <!--단어 필드-->
     <section class = 'wordsField'>
 
@@ -44,6 +48,28 @@
 
 
 <!--테스트 구역-->
+
+<!--팝업 템플릿-->
+<template id="popupTemplate">
+  <div class="randomPopup">
+    <button type = "button" class="popupClose" onclick="closePopup(this)">X</button>
+    <span class="popupContent"></span>
+    <div class="popupChoices">
+      <button type="button" data-choice="yes" onclick="choosePopup(this)">
+  
+      </button>
+      <button type="button" data-choice="no" onclick="choosePopup(this)">
+  
+      </button>
+      
+      
+
+    </div>
+  
+  </div>
+</template>
+
+<div class = "popupArea"></div>
 
 
 

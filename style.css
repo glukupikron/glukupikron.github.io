@@ -30,6 +30,82 @@ body::before {
     
 }
 
+.sphereField{
+    animation: moveShape 18s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite alternate;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+
+}
+
+.sphere{
+
+    width: 500px;
+    aspect-ratio: 1/1;
+    background: linear-gradient(
+        rgba(224, 255, 253, 0.637) 0%,
+        rgba(251, 253, 253, 0.5) 40%,
+        rgba(235, 229, 207, 0.4) 100%
+
+    );
+
+    border-radius: 40% 70% 70% 30% / 30% 30% 70% 70%;
+    filter: blur(50px);
+    animation: changeShape 6s linear infinite, rotateShape 12s linear infinite alternate;
+}
+
+@keyframes rotateShape {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(36deg);
+    }
+}
+
+@keyframes moveShape {
+
+    0%,
+    100% {
+        transform: translate(20%,0);
+    }
+    25% {
+        transform: translate(35%, 10vh);
+    }
+    50% {
+        transform: translate(45%, 20vh);
+    }
+    75% {
+        transform: translate(25%, 30vh);
+    }
+
+}
+
+@keyframes changeShape {
+
+    0%,
+    100% {
+        border-radius: 40% 70% 70% 30% / 30% 30% 70% 70%;
+    }
+    20% {
+        border-radius: 20% 50% 40% 50% / 40% 36% 20% 50%;
+    }
+    40% {
+        border-radius: 25% 50% 50% 30% / 65% 50% 35% 25%;
+    }
+    60% {
+        border-radius: 30% 45% 40% 50% / 25% 30% 75% 60%;
+    }
+    80% {
+        border-radius: 30% 40% 40% 60% / 40% 40% 55% 47%;
+    }
+
+}
+
 
 @keyframes colorChange{
     0%{
@@ -85,6 +161,65 @@ body {
     font-family: 'Courier New', Courier, monospace;
     cursor: pointer;
 }
+
+/*팝업들*/
+
+.popupArea {
+    position: fixed;
+    inset: 0;
+    z-index: 15;
+    pointer-events: none;
+}
+
+.randomPopup {
+
+    position: absolute;
+    pointer-events: auto;
+    
+    width: min(80vw, 400px);
+    padding: 30px 20px 20px;
+
+    border: 1.5px dotted #b1cff7;
+    background: rgba(248, 240, 226, 0.95);
+
+    box-sizing: border-box;
+
+    font-family: "Courier New", Courier, monospace;
+    font-size: 14px;
+}
+
+.popupContent {
+    display: block;
+    white-space: pre-line;
+    line-height: 1.4;
+}
+
+.popupChoices {
+    margin-top: 10px;
+}
+
+.popupClose {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+
+    border: 1px;
+    background: transparent;
+    cursor: pointer;
+
+    font-family: inherit;
+}
+
+.popupChoices button {
+    border: 1.5px dotted #b1cff7;
+    background: rgba(240, 239, 237, 0.95);
+    cursor: pointer;
+    font-family: inherit;
+    margin-right: 2px;
+    margin-left: 2px;
+}
+
+/*이벤트 템플릿*/
 
 .eventTemplate {
   font-family: 'Courier New', Courier, monospace;
@@ -667,7 +802,7 @@ body {
   box-sizing: border-box;
   place-items: center; 
  
-  width: 400px;
+  width: 500px;
   grid-template-columns: 1fr; 
   grid-template-rows: 1.8fr 0.2fr; 
   gap: 0px 0px; 
@@ -679,7 +814,7 @@ body {
 .jukeRow1 img {
     
     padding: 10px;
-    width: 390px;
+    width: 490px;
     max-width: 100%;
    
 }
@@ -691,8 +826,8 @@ body {
     line-height: 1.3;
     text-align: center;
     margin-top: 1px;
-    padding-left: 5px;
-    padding-right: 5px;
+    padding-left: 15px;
+    padding-right: 15px;
     padding-bottom: 5px;
     font-size: 14px;
 }
@@ -888,6 +1023,28 @@ body {
         padding-right: 10px;
     }
 
+    .sphere {
+        width: 300px;
+    }
+
+    @keyframes moveShape {
+
+    0%,
+    100% {
+        transform: translate(20%,10vh);
+    }
+    25% {
+        transform: translate(35%, 30vh);
+    }
+    50% {
+        transform: translate(45%, 40vh);
+    }
+    75% {
+        transform: translate(25%, 50vh);
+    }
+
+}
+
     .puzzleTemplate {
         padding: 30px 0;
     }
@@ -996,6 +1153,11 @@ body {
         max-width: 85%;
         margin-right: 1%;
         margin-left: auto;
+    }
+
+    .jukeRow2 {
+        padding-left: 5px;
+        padding-right: 5px;
     }
 
     .puzzleBoard {

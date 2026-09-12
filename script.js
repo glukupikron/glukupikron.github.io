@@ -23,7 +23,208 @@ function scrollAgain(){
 
 window.addEventListener("scroll", checkBottom);
 
+// 팝업
 
+const popupData = [
+    {
+        id: "conversation1",
+        conversationId: "conversation",
+        randomStart: true,
+        text: `“I think you’re gonna make it.”
+        “That doesn’t ensure anything, though.”
+        
+        Continue eavesdropping?`,
+
+        yesLabel: "Yes",
+        noLabel: "No",
+
+        yesNext: "conversation2",
+        noNext: null
+    },
+    
+    {
+        id: "conversation2",
+        conversationId: "conversation",
+        randomStart: false,
+
+        text: `“Maybe we should keep listening.”
+        Continue eavesdropping?`,
+
+        yesLabel: "Sure",
+        noLabel: "Leave",
+
+        yesNext: null,
+        noNext: null,
+    },
+
+    {
+        id: "free1",
+        conversationId: "free1",
+        randomStart: true,
+        text: `I thought it was...`,
+
+    }
+]
+
+const closedConversations = new Set();
+
+function getActiveConversationIds() {
+    const activePopups = popupArea.querySelectorAll( ".randomPopup");
+
+    return new Set(
+        [...activePopups].map(function (popup) {
+            return popup.dataset.conversationId;
+        })
+    );
+}
+
+function getPopupCandidates() {
+    const activeConversationIds = getActiveConversationIds();
+
+    return popupData.filter(function (popup) {
+        return (
+            popup.randomStart === true && !closedConversations.has(popup.conversationId)
+            &&
+            !activeConversationIds.has(popup.conversationId)
+        );
+    });
+}
+
+const popupTemplate = document.querySelector("#popupTemplate");
+
+const popupArea = document.querySelector(".popupArea");
+
+function findPopupData(popupId) {
+    return popupData.find(function (popup){
+        return popup.id === popupId;
+    })
+}
+
+function fillPopup(popup, selectedPopup) {
+    popup.dataset.popupId = selectedPopup.id;
+    popup.dataset.conversationId = selectedPopup.conversationId;
+
+    const popupContent = popup.querySelector(".popupContent");
+
+    popupContent.textContent = selectedPopup.text;
+
+    const popupChoices = popup.querySelector(".popupChoices");
+
+    const hasChoices = 
+        selectedPopup.yesLabel !== undefined && 
+        selectedPopup.noLabel !== undefined;
+
+    popupChoices.hidden = !hasChoices;
+
+    if (hasChoices) {
+        const yesButton = popup.querySelector(
+            '[data-choice = "yes"]'
+        );
+
+        const noButton = popup.querySelector(
+            '[data-choice = "no"]'
+        );
+
+        yesButton.textContent = selectedPopup.yesLabel;
+        noButton.textContent = selectedPopup.noLabel;
+
+    }
+}
+
+function showPopup(popupId) {
+    const selectedPopup = findPopupData(popupId);
+
+    if (!selectedPopup) {
+        return;
+    }
+
+    const newPopup = popupTemplate.content.firstElementChild.cloneNode(true);
+
+    fillPopup(newPopup, selectedPopup);
+
+    popupArea.appendChild(newPopup);
+
+    newPopup.style.left = `${randomNumber(20, window.innerWidth - newPopup.offsetWidth - 10)}px`
+    
+    newPopup.style.top = `${randomNumber(20, window.innerHeight - newPopup.offsetHeight - 10)}px`
+}
+
+function showRandomPopup(){
+    const activePopups = popupArea.querySelectorAll(".randomPopup");
+
+    if (activePopups.length >= 2) {
+        return;
+    }
+
+    const candidates = getPopupCandidates();
+
+    if (candidates.length === 0) {
+        return;
+    }
+
+    const randomIndex = 
+        Math.floor(
+            Math.random() * candidates.length
+        );
+    
+    const selectedPopup = 
+        candidates[randomIndex];
+
+    showPopup(selectedPopup.id);
+}
+
+function choosePopup(button) {
+    const popup = button.closest(".randomPopup");
+
+    const selectedChoice = button.dataset.choice;
+
+    const currentPopupId = popup.dataset.popupId;
+
+    const currentPopup = findPopupData(currentPopupId);
+
+    let nextPopupId;
+
+    if (selectedChoice === "yes") {
+        nextPopupId = currentPopup.yesNext;
+    } else {
+        nextPopupId = currentPopup.noNext;
+    }
+
+    popup.remove();
+
+    if (nextPopupId) {
+        showPopup(nextPopupId);
+    } else {
+        closedConversations.add(
+            currentPopup.conversationId
+        )
+    }
+}
+
+function closePopup(button) {
+    const popup = button.closest(".randomPopup");
+
+    const conversationId = popup.dataset.conversationId;
+
+    closedConversations.add(
+        conversationId
+    );
+
+    popup.remove();
+}
+
+let popupTimer;
+
+function startPopupTimer(){
+    clearTimeout(popupTimer);
+
+    function showNextPopup() {
+        showRandomPopup();
+        popupTimer =
+            setTimeout(showNextPopup, randomNumber(30000, 60000));
+    }
+}
+// 이벤트
 
 const eventSources = document.querySelectorAll(
     "#eventSources .eventTemplate"
@@ -696,7 +897,7 @@ function owari() {
 
 function closeOwari() {
     owariModal.hidden = true;
-    scrollAgain;
+    scrollAgain();
 }
 
 async function captureJourney() {
