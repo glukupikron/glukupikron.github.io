@@ -223,6 +223,9 @@ function startPopupTimer(){
         popupTimer =
             setTimeout(showNextPopup, randomNumber(30000, 60000));
     }
+    popupTimer =
+            setTimeout(showNextPopup, randomNumber(30000, 60000));
+
 }
 // 이벤트
 
