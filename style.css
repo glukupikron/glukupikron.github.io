@@ -13,8 +13,8 @@ body::before {
        -45deg,
         #eee2b1,
         #efede8,
-        #bcdde8
-        /*#f3b6d4 #ddf0f5 #f5e4c5 #cae2ea 컬러 아카이브*/);
+        rgb(112, 39, 3)
+        /*#f3b6d4 #ddf0f5 #f5e4c5 #cae2ea 컬러 아카이브 // 하늘색 #bcdde8 잠깐 보관*/);
 
         background-size:
         200px 200px,
@@ -24,14 +24,15 @@ body::before {
         repeat,
         no-repeat;
 
-        animation: colorChange 6s ease infinite;
+        animation: colorChange 30s ease infinite;
+        /*ease 원래 6초엿음*/
         pointer-events: none;
 
     
 }
 
 .sphereField{
-    animation: moveShape 18s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite alternate;
+    animation: moveShape 35s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite alternate;
     position: fixed;
     width: 100vw;
     height: 100vh;
@@ -43,17 +44,18 @@ body::before {
 
 .sphere{
 
-    width: 500px;
+    width: 600px;
     aspect-ratio: 1/1;
     background: linear-gradient(
-        rgba(224, 255, 253, 0.637) 0%,
-        rgba(251, 253, 253, 0.5) 40%,
+       
+        rgba(251, 253, 253, 0.3) 0%,
+        rgba(239, 171, 142, 0.4) 60%,
         rgba(235, 229, 207, 0.4) 100%
 
     );
 
     border-radius: 40% 70% 70% 30% / 30% 30% 70% 70%;
-    filter: blur(50px);
+    filter: blur(25px);
     animation: changeShape 6s linear infinite, rotateShape 12s linear infinite alternate;
 }
 
@@ -74,13 +76,13 @@ body::before {
         transform: translate(20%,0);
     }
     25% {
-        transform: translate(35%, 10vh);
+        transform: translate(40%, 15vh);
     }
     50% {
-        transform: translate(45%, 20vh);
+        transform: translate(70%, 40vh);
     }
     75% {
-        transform: translate(25%, 30vh);
+        transform: translate(15%, 55vh);
     }
 
 }

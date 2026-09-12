@@ -230,13 +230,32 @@ const eventSources = document.querySelectorAll(
     "#eventSources .eventTemplate"
 )
 
+let previousEventSource = null;
+let previousPuzzleImage = null;
 
+function pickRandom(items) {
+    const randomIndex = Math.floor(
+        Math.random()* items.length
+    );
+    
+    return items[randomIndex];
+}
 
 function randomEvent() {
-    const randomIndex = Math.floor(
-        Math.random() * eventSources.length);
-    
-        const selectedSource = eventSources[randomIndex];
+
+    let eventCandidates = [...eventSources].filter(
+        function(source) {
+            const isPuzzle = source.classList.contains("puzzleTemplate");
+
+            return isPuzzle || source !== previousEventSource;
+        }
+    );
+
+    if (eventCandidates.length === 0) {
+        eventCandidates = [...eventSources];
+    }
+    const selectedSource = pickRandom(eventCandidates);
+    previousEventSource = selectedSource;
 
         const newEvent = selectedSource.cloneNode(true);
 
@@ -247,9 +266,18 @@ function randomEvent() {
         const puzzleBoard = newEvent.querySelector(".puzzleBoard");
 
         if (puzzleBoard) {
-            const randomPuzzleIndex = Math.floor(Math.random() * puzzleSources.length);
+        
+            let puzzleCandidates = puzzleSources.filter(
+                function (puzzle) {
+                    return puzzle.image !== previousPuzzleImage;
+                }
+            );
 
-            const selectedPuzzle = puzzleSources[randomPuzzleIndex];
+            if (puzzleCandidates.length === 0) {
+                puzzleCandidates = puzzleSources;
+            }
+
+            const selectedPuzzle = pickRandom(puzzleCandidates);
 
             const puzzleGuide = newEvent.querySelector(".puzzleGuide");
             puzzleGuide.textContent = selectedPuzzle.guide;
