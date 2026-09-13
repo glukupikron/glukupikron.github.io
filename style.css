@@ -433,6 +433,7 @@ body {
     animation-name: debrisFloat;
     animation-timing-function: linear;
     animation-fill-mode: forwards;
+    z-index: 10;
 
 }
 
@@ -1023,6 +1024,12 @@ body {
     body {
         padding-left: 10px;
         padding-right: 10px;
+    }
+
+    .hanabi:hover {
+        box-shadow: none;
+        z-index: auto;
+        position: static;
     }
 
     .sphere {
