@@ -1164,6 +1164,10 @@ body {
         margin-left: auto;
     }
 
+    .jukeRow1 img {
+        max-width: 100%
+    }
+
     .jukeRow2 {
         padding-left: 5px;
         padding-right: 5px;
