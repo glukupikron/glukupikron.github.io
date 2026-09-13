@@ -162,6 +162,7 @@ body {
     border-color: rgb(119, 100, 68);
     font-family: 'Courier New', Courier, monospace;
     cursor: pointer;
+    color: black;
 }
 
 /*팝업들*/
@@ -842,6 +843,8 @@ body {
     border-color: rgb(119, 100, 68);
     font-family: 'Courier New', Courier, monospace;
     font-size: 14px;
+    color: black;
+
     background-color: transparent;
     cursor: pointer;
     margin-bottom: 5px;
@@ -1164,8 +1167,14 @@ body {
         margin-left: auto;
     }
 
+    .jukeRow1 {
+    width: 100%;
+    min-width: 0;
+}
+
     .jukeRow1 img {
-        max-width: 100%
+        width: 100%;
+        height: auto;
     }
 
     .jukeRow2 {
