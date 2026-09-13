@@ -632,7 +632,8 @@ function smoking (puff) {
             ash.src = "use_image/ash.png";
             ash.className = "ashTrace";
 
-            ash.style.left = `${ashPosition.left + window.scrollX - 30}px`;
+            const ashOffset = window.innerWidth <= 600? 100: 30;
+            ash.style.left = `${ashPosition.left + window.scrollX - ashOffset}px`;
             ash.style.top = `${ashPosition.top + window.scrollY}px`;
 
             document.body.appendChild(ash);
