@@ -164,6 +164,27 @@
     <p class = "puzzleGuide"></p>
   </div>
 
+<!--그림 그리기-->
+<div class = "eventTemplate canvasGrid" onclick = "stopScroll()">
+  <div class = "canvasRow1">
+
+  </div>
+  <div class = "canvasRow2">
+    <canvas
+      class = "drawingCanvas"
+      width = "1000"
+      height =  "700">
+    Your browser does not support canvas.
+    </canvas>
+  </div>
+  <div class = "canvasRow3">
+    <input type = "button" value="Clear" class="canvasButton" onclick="event.stopPropagation(); clearDrawing(this)">
+    <input type = "button" value="Done" class="canvasButton" onclick="event.stopPropagation(); finishDrawing(this)">
+    <input type = "button" value="Skip" class="canvasButton" onclick="setTimeout(scrollAgain, 0)">
+    
+    
+  </div>
+</div>
 
 
 </div>

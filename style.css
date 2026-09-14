@@ -395,7 +395,7 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    font-family: 'punkbabe';
+    opacity: 0.5;
 
     width: 100%;
     height: 100%;
@@ -1023,6 +1023,97 @@ body {
     text-align: left;
 }
 
+/*캔버스*/
+
+.canvasGrid {
+
+  margin-left: 50%; 
+  margin-bottom: 200px;
+  padding-bottom: 5px;
+  display: grid;
+  border: 2px dotted;
+  border-color: rgb(119, 100, 68);
+  box-sizing: border-box;
+  place-items: center; 
+ 
+  width: 500px;
+  grid-template-columns: 1fr; 
+ grid-template-rows: auto auto auto;
+
+}
+
+.drawingCanvas {
+    display: block;
+    width: 100%;
+    background-color: rgba(251, 253, 253, 0.4);
+    height: auto;
+    touch-action: none;
+    cursor: crosshair;
+    border: 2px dotted;
+    border-color: rgb(119, 100, 68);
+    box-sizing: border-box;
+
+}
+
+
+.scatteredDrawing {
+    position: absolute;
+    width: min(45vw, 400px);
+    height: auto;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+
+
+.canvasRow1 {
+     width: 100%;
+     text-align: center;
+     font-size: 16px;
+    padding: 20px;
+    padding-bottom: 10px;
+    max-width: 100%;
+    box-sizing: border-box;
+   
+}
+
+.canvasRow2 {
+    
+    padding: 10px;
+    max-width: 100%;
+    box-sizing: border-box;
+   
+}
+
+.canvasRow3 {
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.3;
+    text-align: center;
+    margin-top: 1px;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 14px;
+}
+
+.canvasButton {
+    width: 300px;
+    height: 25px;
+    border: 1px solid;
+    border-color: rgb(119, 100, 68);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    color: black;
+
+    background-color: transparent;
+    cursor: pointer;
+    margin-bottom: 5px;
+}
+
+
 
 
 /*모바일의 경우*/
@@ -1172,9 +1263,9 @@ body {
     }
 
     .jukeRow1 {
-    width: 100%;
-    min-width: 0;
-}
+        width: 100%;
+        min-width: 0;
+    }
 
     .jukeRow1 img {
         width: 100%;
@@ -1194,10 +1285,23 @@ body {
         max-width: 100%;
     }
 
+    .canvasGrid {
+    width: 85%;
+    margin-left: auto;
+    margin-right: auto;
+    }
+
+    .canvasRow1 {
+        font-size: 14px;
+    }
+
     .puzzleBoard {
         width: 80vw;
         
     }
+
+
+    
 
 
 

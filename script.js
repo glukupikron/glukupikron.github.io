@@ -67,6 +67,7 @@ const popupData = [
 ]
 
 const closedConversations = new Set();
+const completedDrawings = [];
 
 function getActiveConversationIds() {
     const activePopups = popupArea.querySelectorAll( ".randomPopup");
@@ -244,27 +245,85 @@ function pickRandom(items) {
     return items[randomIndex];
 }
 
+//캔버스 row sources 
+
+const canvasRowSources = [
+    {
+        id: "canvasText1",
+        type: "text",
+        text: "Imagine your loving one’s eyes"
+    },
+
+    {
+        id: "canvasText2",
+        type: "text",
+        text: "Remember the best moment you shared with them"
+    },
+    {
+        id: "canvasText3",
+        type: "text",
+        text: "You can draw how they yawn."
+    },
+
+    {
+        id: "canvasText4",
+        type: "text",
+        text: "You can draw how they blink"
+    },
+    {
+        id: "canvasText5",
+        type: "text",
+        text: "Well, imagine what they would look like if they arrive here."
+    }
+]
+let previousCanvasRowId = null;
+const completedCanvasIds = new Set();
+
+//랜덤 이벤트
+
 function randomEvent() {
 
-    let eventCandidates = [...eventSources].filter(
-        function(source) {
-            const isPuzzle = source.classList.contains("puzzleTemplate");
+    let availableEventSources = [...eventSources].filter(
+        function (source) { 
+            const isCanvas = source.classList.contains("canvasGrid");
+            const everyCanvasIsCompleted = completedCanvasIds.size === canvasRowSources.length;
+
+            if (isCanvas && everyCanvasIsCompleted) { return false; }
+
+            return true;
+
+
+        }
+    );
+
+    let eventCandidates = availableEventSources.filter(
+        function(source) { const isPuzzle = source.classList.contains("puzzleTemplate");
 
             return isPuzzle || source !== previousEventSource;
         }
     );
 
-    if (eventCandidates.length === 0) {
-        eventCandidates = [...eventSources];
+    if (eventCandidates.length === 0) { 
+        eventCandidates = availableEventSources;
     }
     const selectedSource = pickRandom(eventCandidates);
     previousEventSource = selectedSource;
 
-        const newEvent = selectedSource.cloneNode(true);
+    const newEvent = selectedSource.cloneNode(true);
+    const eventArea = document.querySelector(".eventArea");
+    eventArea.appendChild(newEvent);
 
-        const eventArea = document.querySelector(".eventArea");
 
-        eventArea.appendChild(newEvent);
+
+
+        const drawingCanvas =
+            newEvent.querySelector(".drawingCanvas");
+
+
+
+        if (drawingCanvas) {
+            setupCanvasEvent(newEvent);
+        }
 
         const puzzleBoard = newEvent.querySelector(".puzzleBoard");
 
@@ -296,6 +355,243 @@ function randomEvent() {
     
 }
 
+//캔버스 그리기
+
+function setupCanvasEvent(canvasEvent) {
+    const canvasCandidates = canvasRowSources.filter(
+        function (row) {
+            return !completedCanvasIds.has(row.id);
+        }
+    );
+
+    if (canvasCandidates.length === 0) {
+        return;
+    }
+
+    const selectedRow = pickRandom(canvasCandidates);
+
+    canvasEvent.dataset.canvasRowId = selectedRow.id;
+
+    const canvasRow1 =
+        canvasEvent.querySelector(".canvasRow1");
+
+    canvasRow1.replaceChildren();
+
+    if (selectedRow.type === "image") {
+        const image = document.createElement("img");
+
+        image.className = "canvasPromptImage";
+        image.src = selectedRow.src;
+        image.alt = selectedRow.alt;
+
+        canvasRow1.appendChild(image);
+    } else {
+        const text = document.createElement("p");
+
+        text.className = "canvasPromptText";
+        text.textContent = selectedRow.text;
+
+        canvasRow1.appendChild(text);
+    }
+
+    const canvas =
+        canvasEvent.querySelector(".drawingCanvas");
+
+    setupDrawingCanvas(canvas);
+}
+
+function setupDrawingCanvas(canvas) {
+    const context = canvas.getContext("2d");
+
+    let isDrawing = false;
+    let previousPoint = null;
+
+    context.strokeStyle = "#776444";
+    context.fillStyle = "#776444";
+    context.lineWidth = 4;
+    context.lineCap = "square";
+    context.lineJoin = "miter";
+
+    function getCanvasPoint(event) {
+        const canvasPosition =
+            canvas.getBoundingClientRect();
+
+        const scaleX =
+            canvas.width / canvasPosition.width;
+
+        const scaleY =
+            canvas.height / canvasPosition.height;
+
+        return {
+            x: (
+                event.clientX - canvasPosition.left
+            ) * scaleX,
+
+            y: (
+                event.clientY - canvasPosition.top
+            ) * scaleY
+        };
+    }
+
+    canvas.addEventListener(
+        "pointerdown",
+        function (event) {
+            stopScroll();
+
+            isDrawing = true;
+
+            canvas.setPointerCapture(event.pointerId);
+
+            previousPoint = getCanvasPoint(event);
+
+            context.beginPath();
+            context.arc(
+                previousPoint.x,
+                previousPoint.y,
+                context.lineWidth / 2,
+                0,
+                Math.PI * 2
+            );
+            context.fill();
+
+            context.beginPath();
+            context.moveTo(
+                previousPoint.x,
+                previousPoint.y
+            );
+        }
+    );
+
+    canvas.addEventListener(
+        "pointermove",
+        function (event) {
+            if (!isDrawing) {
+                return;
+            }
+
+            const currentPoint =
+                getCanvasPoint(event);
+
+            const middlePoint = {
+                x: (
+                    previousPoint.x + currentPoint.x
+                ) / 2,
+
+                y: (
+                    previousPoint.y + currentPoint.y
+                ) / 2
+            };
+
+            context.quadraticCurveTo(
+                previousPoint.x,
+                previousPoint.y,
+                middlePoint.x,
+                middlePoint.y
+            );
+
+            context.stroke();
+
+            previousPoint = currentPoint;
+        }
+    );
+
+    canvas.addEventListener(
+        "pointerup",
+        function (event) {
+            if (!isDrawing) {
+                return;
+            }
+
+            const finalPoint =
+                getCanvasPoint(event);
+
+            context.lineTo(
+                finalPoint.x,
+                finalPoint.y
+            );
+
+            context.stroke();
+            context.closePath();
+
+            isDrawing = false;
+            previousPoint = null;
+        }
+    );
+
+    canvas.addEventListener(
+        "pointercancel",
+        function () {
+            context.closePath();
+
+            isDrawing = false;
+            previousPoint = null;
+        }
+    );
+}
+function clearDrawing(button) {
+    const canvasGrid = button.closest(".canvasGrid");
+
+    const canvas = canvasGrid.querySelector(".drawingCanvas");
+
+    const context = canvas.getContext("2d");
+
+    context.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+}
+
+function saveDrawing(canvas) {
+    const savedDrawing = document.createElement("canvas");
+
+    savedDrawing.width = canvas.width;
+    savedDrawing.height = canvas.height;
+
+    const savedContext = savedDrawing.getContext("2d");
+
+    savedContext.drawImage(
+        canvas,
+        0,
+        0
+    );
+
+    completedDrawings.push(savedDrawing);
+    
+}
+
+function finishDrawing(button) {
+    const canvasGrid = button.closest(".canvasGrid");
+
+    if (canvasGrid.dataset.finished === "true") {
+        return;
+    }
+
+    canvasGrid.dataset.finished = "true";
+
+    const completedId = canvasGrid.dataset.canvasRowId;
+    completedCanvasIds.add(completedId);
+
+    const originalCanvas =
+    canvasGrid.querySelector(".drawingCanvas");
+
+    saveDrawing(originalCanvas);
+
+
+    originalCanvas.style.pointerEvents = "none";
+
+    const canvasButtons = canvasGrid.querySelectorAll(".canvasButton");
+
+    canvasButtons.forEach(
+        function(canvasButton) {
+            canvasButton.disabled = true;
+        }
+    );
+
+    scrollAgain();
+    
+}
 
 // debris 호출gg
 const $debris = document.querySelector(".debris");
@@ -455,9 +751,58 @@ document.addEventListener("click", function (event) {
     }
 });
 
-// 편지 출처 글자 랜덤 
+// 편지 출처 글자 랜덤 , 그림 랜덤
 
 const field = document.querySelector('.wordsField');
+
+function placeInBackground(element) {
+    field.appendChild(element);
+
+    const xMax = Math.max (
+        0,
+        window.innerWidth - element.offsetWidth
+    );
+
+    const yMax = Math.max(
+        0,
+        window.innerHeight - element.offsetHeight
+    );
+
+    const x =
+        window.scrollX + randomNumber(0, xMax);
+
+    const y =
+        window.scrollY + randomNumber(0, yMax);
+
+    element.style.position = "absolute";
+    element.style.left = `${x}px`;
+    element.style.top = `${y}px`;
+
+}
+
+function createScatteredDrawing() {
+    if (completedDrawings.length === 0){
+        return;
+    }
+
+    const savedDrawing = pickRandom(completedDrawings);
+
+    const drawingCopy = document.createElement("canvas");
+
+    drawingCopy.className = "scatteredDrawing";
+    drawingCopy.width = savedDrawing.width;
+    drawingCopy.height = savedDrawing.height;
+
+    const copyContext = drawingCopy.getContext("2d");
+
+    copyContext.drawImage(
+        savedDrawing,
+        0,
+        0
+    );
+
+    placeInBackground(drawingCopy)
+}
 
 function createDiv() {
   
@@ -495,16 +840,7 @@ function createDiv() {
 
     // 화면 좌표에 박는 법
 	
-    const xMax = Math.max(0, window.innerWidth - newDiv.offsetWidth);
-    const yMax = Math.max(0, window.innerHeight - newDiv.offsetHeight);
-    
-    const x = window.scrollX + randomNumber(0, xMax);
-    const y = window.scrollY + randomNumber(0, yMax);
-    
-
-    newDiv.style.position = 'absolute';
-    newDiv.style.left = `${x}px`;
-    newDiv.style.top = `${y}px`;
+    placeInBackground(newDiv);
     
    
   }, i* appearDelay);
@@ -528,6 +864,7 @@ function scheduleRandom(action, minDelay, maxDelay) {
 
 //편지 저장 단어 나타나는 간격
 scheduleRandom(createDiv, 1*30*1000, 1*60*1000);
+scheduleRandom(createScatteredDrawing, 1*45*1000, 1*70*1000);
 
 
 
@@ -737,6 +1074,10 @@ function playTrack3(button){
     audio.volume = 0.6;
     setTimeout(scrollAgain, 0);
 }
+
+// 캔버스
+
+
 
 // 랜덤 align
 
