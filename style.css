@@ -1262,6 +1262,9 @@ body {
         margin-right: auto;
         margin-left: auto;
         grid-template-columns: minmax(0, 1fr);
+
+        position: relative;
+        left: 10px;
     }
 
     .jukeRow1 {
