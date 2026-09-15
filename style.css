@@ -1259,7 +1259,7 @@ body {
 
     .jukeGrid {
         max-width: 85%;
-        margin-right: 1%;
+        margin-right: auto;
         margin-left: auto;
         grid-template-columns: minmax(0, 1fr);
         border-left: 2px dotted rgb(70, 50, 30);;
