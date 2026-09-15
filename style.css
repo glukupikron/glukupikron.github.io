@@ -1262,7 +1262,7 @@ body {
         margin-right: 1%;
         margin-left: auto;
         grid-template-columns: minmax(0, 1fr);
-        border-left: 4px solid red;
+        border-left: 2px dotted rgb(70, 50, 30);;
     }
 
     .jukeRow1 {
