@@ -348,9 +348,9 @@ function randomEvent() {
                     {backgroundPosition: "-600px center"}
                 ],
                 {
-                    duration: 9000,
+                    duration: 55000,
                     iterations: Infinity,
-                    easing: "steps(8, end)"
+                    easing: "linear"
 
                 }
             );

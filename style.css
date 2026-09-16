@@ -1336,6 +1336,10 @@ body {
         
     }
 
+    .birdCloudImage.bird {
+    width: clamp(90px, 30vw, 130px);
+    }
+
     .birdCloudTemplate.cloud {
     width: calc(100% + 20px);
     margin-left: -10px;
