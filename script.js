@@ -234,6 +234,9 @@ const eventSources = document.querySelectorAll(
     "#eventSources .eventTemplate"
 )
 
+const birdCloudSource = document.querySelector("#eventSources .birdCloudTemplate");
+
+let regularEventCount = 0;
 let previousEventSource = null;
 let previousPuzzleImage = null;
 
@@ -285,6 +288,9 @@ function randomEvent() {
 
     let availableEventSources = [...eventSources].filter(
         function (source) { 
+            if (source === birdCloudSource) {
+                return false;
+            }
             const isCanvas = source.classList.contains("canvasGrid");
             const everyCanvasIsCompleted = completedCanvasIds.size === canvasRowSources.length;
 
@@ -306,12 +312,103 @@ function randomEvent() {
     if (eventCandidates.length === 0) { 
         eventCandidates = availableEventSources;
     }
-    const selectedSource = pickRandom(eventCandidates);
+    
+    let selectedSource;
+
+    if (regularEventCount === 2) {
+        selectedSource = birdCloudSource;
+        regularEventCount = 0;
+    } else {
+        selectedSource = pickRandom(eventCandidates);
+        regularEventCount++;
+    }
+
     previousEventSource = selectedSource;
+
 
     const newEvent = selectedSource.cloneNode(true);
     const eventArea = document.querySelector(".eventArea");
     eventArea.appendChild(newEvent);
+
+    if (newEvent.classList.contains("birdCloudTemplate")) {
+        startBirdCloud(newEvent);
+    }
+
+    function startBirdCloud(eventElement) {
+        const image = eventElement.querySelector(".birdCloudImage");
+        const isBird = Math.random() < 0.5;
+
+        if (!isBird) {
+            image.remove();
+            eventElement.classList.add("cloud");
+
+            eventElement.animate(
+                [
+                    {backgroundPosition: "0px center"},
+                    {backgroundPosition: "-600px center"}
+                ],
+                {
+                    duration: 9000,
+                    iterations: Infinity,
+                    easing: "steps(8, end)"
+
+                }
+            );
+
+            return;
+        }
+
+        image.classList.add(isBird ? "bird" : "cloud");
+
+        image.onload = function () {
+            const maxX = Math.max(
+                0,
+                eventElement.clientWidth - image.offsetWidth
+            );
+
+            const maxY = Math.max(
+                0,
+                eventElement.clientHeight - image.offsetHeight
+            );
+
+            const cloudY = randomNumber(0, maxY);
+            const keyframes = [];
+
+            for (let i = 0; i<=8; i++) {
+                const progress = i/8;
+                const isEndpoint = i === 0 || i ===8;
+
+                const x = maxX * progress;
+                const baseY = maxY * progress;
+                const jitter = isEndpoint
+                    ?0
+                    : randomNumber(-40, 40);
+                
+                const y = isBird
+                    ? Math.max(0, Math.min(maxY, baseY + jitter))
+                    : cloudY;
+                
+                const angle = isBird && !isEndpoint
+                    ? randomNumber(-25,25)
+                    : 0;
+                
+                keyframes.push({
+                    transform:
+                        `translate(${x}px, ${y}px) rotate(${angle}deg)`
+                });
+            }
+
+            image.animate(keyframes, {
+                duration: 9000,
+                iterations: Infinity,
+                easing: "steps(8,end)"
+            });
+        };
+
+        image.src = isBird
+            ? "use_image/bird.png"
+            : "use_image/sky2.png";
+    }
 
 
 
