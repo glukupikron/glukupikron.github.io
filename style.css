@@ -1118,7 +1118,7 @@ body {
 .birdCloudTemplate {
     position: relative;
     width: 100%;
-    height: 500px;
+    height: 450px;
     overflow: hidden;
 }
 
@@ -1135,6 +1135,7 @@ body {
 }
 
 .birdCloudTemplate.cloud {
+    margin-bottom: 70px;
     background-image: url("use_image/sky2.png");
     background-size: 600px auto;
     background-repeat: repeat-x;
