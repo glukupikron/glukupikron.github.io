@@ -25,6 +25,85 @@ window.addEventListener("scroll", checkBottom);
 
 // 팝업
 
+const maskScenes = [
+    {
+        text: `“Last night, a man in a mask appeared.”
+
+Continue eavesdropping?`
+    },
+    {
+        text: `“I decided to follow him. It was like something out of a dream, you know?”
+“Yeah. Life is long and boring. Things like that don’t happen very often.”`
+    },
+    {
+        text: `“So I followed him, like I was the protagonist of ‘Dream Story’ or something…. Anyway, I kept walking and walking after him, and eventually we ended up at this park.”
+“Did he take off his mask?”`
+    },
+    {
+        text: `“No. He never took off his mask. When he stepped into the middle of the lawn, a swarm of rats came rushing toward him. Then, with a single gesture of his hand, they vanished without a trace.”
+“Did he take off his cloak?”`
+    },
+    {
+        text: `“No. How did you know he was wearing a cloak?”
+“Well, that much is obvious.”`
+    },
+    {
+        text: `“I hid behind one of the nearby trees and watched. Then these ghost-like figures started emerging from wherever they’d been hiding and approached him.”
+“Ghosts?”`
+    },
+    {
+        text: `“I said ghost-‘like.’ They weren’t actual ghosts. They were people. They lined up one by one and waited for their turn.”
+“Was he some kind of dealer?”`
+    },
+    {
+        text: `“Hmm… maybe? But he spent quite a long time with each person. Some of them laughed. Some of them cried.”
+“What did you do?”`
+    },
+    {
+        text: `“I waited until every last one of them had left. I tried to get a good look at them, to figure out what they actually looked like, but no matter how much I rubbed my eyes, I couldn’t make them out. They were blurry, like smoke. Those figures…”
+“But you could hear them laughing and crying.”`,
+        emphasis: "waited"
+    },
+    {
+        text: `“Yeah. They weren’t pleasant sounds. Anyway, I waited. And then I walked up to him. And then he…”
+For a moment, silence settles over the air around them.`
+    },
+    {
+        text: `“I stared at him for a long time. I didn’t feel like laughing, and I didn’t feel like crying either. I remember thinking his mask was so smooth and beautiful. No, actually, maybe it was the opposite. Maybe it was terribly rough, like the surface of the moon seen up close.”
+“Did he take off his mask?”`
+    },
+    {
+        text: `“No. Instead, he took my hand.”
+“Your hand?”`
+    },
+    {
+        text: `“Then he put his other hand into his pocket.”
+“His pocket?”`
+    },
+    {
+        text: `“And then he placed this in my palm.”
+“This?”`
+    },
+    {
+        text: `You crane your neck forward to steal a look at the scene, just as the woman had hidden behind a tree the night before.
+A black mask rests in the woman’s palm.
+“What do you think I should do with it?”`
+    }
+];
+
+const maskPopups = maskScenes.map(function (scene, index) {
+    return {
+        ...scene,
+        id: `mask${index + 1}`,
+        conversationId: "mask",
+        randomStart: index === 0,
+        yesLabel: "Continue",
+        noLabel: "Leave",
+        yesNext: index < maskScenes.length - 1 ? `mask${index + 2}` : null,
+        noNext: null
+    };
+});
+
 const popupData = [
     {
         id: "conversation1",
@@ -63,7 +142,8 @@ const popupData = [
         randomStart: true,
         text: `I thought it was...`,
 
-    }
+    },
+    ...maskPopups
 ]
 
 const closedConversations = new Set();
@@ -108,6 +188,22 @@ function fillPopup(popup, selectedPopup) {
     const popupContent = popup.querySelector(".popupContent");
 
     popupContent.textContent = selectedPopup.text;
+
+    if (selectedPopup.emphasis) {
+        const word = selectedPopup.emphasis;
+        const wordIndex = selectedPopup.text.indexOf(word);
+
+        if (wordIndex !== -1) {
+            const strong = document.createElement("strong");
+            strong.textContent = word;
+
+            popupContent.replaceChildren(
+                document.createTextNode(selectedPopup.text.slice(0, wordIndex)),
+                strong,
+                document.createTextNode(selectedPopup.text.slice(wordIndex + word.length))
+            );
+        }
+    }
 
     const popupChoices = popup.querySelector(".popupChoices");
 
