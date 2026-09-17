@@ -98,10 +98,9 @@ For a moment, silence settles over the air around them.`
 “This?”`
     },
     {
-        text: `You crane your neck forward to steal a look at the scene, just as the woman had hidden behind a tree the night before.
-A black mask rests in the woman’s palm.
-
-“What do you think I should do with it?”`
+        italicIntro: `You crane your neck forward to steal a look at the scene, just as the woman had hidden behind a tree the night before.
+A black mask rests in the woman’s palm.`,
+        text: `“What do you think I should do with it?”`
     }
 ];
 
@@ -483,6 +482,12 @@ function fillPopup(popup, selectedPopup) {
     const popupContent = popup.querySelector(".popupContent");
 
     popupContent.textContent = selectedPopup.text;
+
+    if (selectedPopup.italicIntro) {
+        const italic = document.createElement("em");
+        italic.textContent = selectedPopup.italicIntro;
+        popupContent.prepend(italic, "\n\n");
+    }
 
     if (selectedPopup.emphasis) {
         const word = selectedPopup.emphasis;
