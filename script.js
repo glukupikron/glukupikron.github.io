@@ -33,60 +33,74 @@ Continue eavesdropping?`
     },
     {
         text: `“I decided to follow him. It was like something out of a dream, you know?”
+
 “Yeah. Life is long and boring. Things like that don’t happen very often.”`
     },
     {
         text: `“So I followed him, like I was the protagonist of ‘Dream Story’ or something…. Anyway, I kept walking and walking after him, and eventually we ended up at this park.”
+
 “Did he take off his mask?”`
     },
     {
         text: `“No. He never took off his mask. When he stepped into the middle of the lawn, a swarm of rats came rushing toward him. Then, with a single gesture of his hand, they vanished without a trace.”
+
 “Did he take off his cloak?”`
     },
     {
         text: `“No. How did you know he was wearing a cloak?”
+
 “Well, that much is obvious.”`
     },
     {
         text: `“I hid behind one of the nearby trees and watched. Then these ghost-like figures started emerging from wherever they’d been hiding and approached him.”
+
 “Ghosts?”`
     },
     {
         text: `“I said ghost-‘like.’ They weren’t actual ghosts. They were people. They lined up one by one and waited for their turn.”
+
 “Was he some kind of dealer?”`
     },
     {
         text: `“Hmm… maybe? But he spent quite a long time with each person. Some of them laughed. Some of them cried.”
+
 “What did you do?”`
     },
     {
         text: `“I waited until every last one of them had left. I tried to get a good look at them, to figure out what they actually looked like, but no matter how much I rubbed my eyes, I couldn’t make them out. They were blurry, like smoke. Those figures…”
-“But you could hear them laughing and crying.”`,
+
+        “But you could hear them laughing and crying.”`,
         emphasis: "waited"
     },
     {
         text: `“Yeah. They weren’t pleasant sounds. Anyway, I waited. And then I walked up to him. And then he…”
+
 For a moment, silence settles over the air around them.`
     },
     {
         text: `“I stared at him for a long time. I didn’t feel like laughing, and I didn’t feel like crying either. I remember thinking his mask was so smooth and beautiful. No, actually, maybe it was the opposite. Maybe it was terribly rough, like the surface of the moon seen up close.”
+
 “Did he take off his mask?”`
     },
     {
         text: `“No. Instead, he took my hand.”
+
 “Your hand?”`
     },
     {
         text: `“Then he put his other hand into his pocket.”
+
 “His pocket?”`
     },
     {
         text: `“And then he placed this in my palm.”
+
 “This?”`
     },
     {
         text: `You crane your neck forward to steal a look at the scene, just as the woman had hidden behind a tree the night before.
 A black mask rests in the woman’s palm.
+
 “What do you think I should do with it?”`
     }
 ];
@@ -99,51 +113,332 @@ const maskPopups = maskScenes.map(function (scene, index) {
         randomStart: index === 0,
         yesLabel: "Continue",
         noLabel: "Leave",
+        hideContinue: index === maskScenes.length - 1,
         yesNext: index < maskScenes.length - 1 ? `mask${index + 2}` : null,
         noNext: null
     };
 });
 
-const popupData = [
+const loversScenes = [
     {
-        id: "conversation1",
-        conversationId: "conversation",
-        randomStart: true,
-        text: `“I think you’re gonna make it.”
-        “That doesn’t ensure anything, though.”
-        
-        Continue eavesdropping?`,
+        text: `One lover is asleep, resting against the other’s shoulder.
 
-        yesLabel: "Yes",
-        noLabel: "No",
+“I’m sorry. What I told you yesterday was a lie.”
 
-        yesNext: "conversation2",
-        noNext: null
+Their lover is fast asleep. Continue eavesdropping?`
     },
-    
     {
-        id: "conversation2",
-        conversationId: "conversation",
-        randomStart: false,
+        text: `“When I said I fell asleep before you last night. That was a lie.”
 
-        text: `“Maybe we should keep listening.”
-        Continue eavesdropping?`,
+“……”
 
-        yesLabel: "Sure",
+“I was awake for a very long time.”`
+    },
+    {
+        text: `“You think I was off doing something stupid while I was away? I wasn’t. That I met someone else and exchanged words of love with them? Of course not. I love you more than anyone.”`
+    },
+    {
+        text: `“I was just thinking for a long time. I waited for your messages urging me to reply to stop. And then…”
+
+“……”
+
+“I thought about my past.”`,
+        emphasis: "waited"
+    },
+    {
+        text: `“You know, our relationship is so unstable.”
+
+“……”
+
+“It depends on too many coincidences. What if you hadn’t left the house that day to go see a movie no one else wanted to watch, all by yourself? What if I hadn’t happened to sit in the same row as you? What if you hadn’t happened to snore so incredibly loudly that I noticed you were there?”`
+    },
+    {
+        text: `“We’re doing fine now, but… what if another coincidence comes along? What if one day, a movie you’ve watched over and over suddenly feels boring to you? What if you no longer find any meaning in sending me messages?”`
+    },
+    {
+        text: `Suddenly, their lover wakes up.
+
+“Could you keep it down a little? I was just about to shake hands with my favorite actor in my dream.”
+
+“…Okay.”
+
+The aside is hastily brought to an end.`
+    }
+];
+
+const loversPopups = loversScenes.map(function (scene, index) {
+    return {
+        ...scene,
+        id: `lovers${index + 1}`,
+        conversationId: "lovers",
+        randomStart: index === 0,
+        yesLabel: "Continue",
         noLabel: "Leave",
+        hideContinue: index === loversScenes.length - 1,
+        yesNext: index < loversScenes.length - 1 ? `lovers${index + 2}` : null,
+        noNext: null
+    };
+});
 
-        yesNext: null,
-        noNext: null,
+const onigokgoPopups = [
+    {
+        id: "onigokgo1",
+        conversationId: "onigokgo",
+        randomStart: true,
+        text: `The children are playing hide-and-seek.
+
+“5… 4… 3… 2… 1… Ready or not, here I come!”`,
+        choices: [
+            { label: "Continue", next: "onigokgo2" },
+            { label: "Leave", next: null }
+        ]
     },
+    {
+        id: "onigokgo2",
+        conversationId: "onigokgo",
+        text: `The seeker runs between the buildings.
+
+“I know where all of you are! You’d better hide well!”`,
+        choices: [
+            { label: "Make a bird sound", next: "onigokgo2-1" },
+            { label: "Stay still", next: "onigokgo2-2" },
+        ]
+    },
+    {
+        id: "onigokgo2-1",
+        conversationId: "onigokgo",
+        text: `The seeker comes running toward where you are.
+
+They stare at you for a moment, then begin searching every corner nearby.
+
+One of the hiding children can’t take it anymore and bursts out.
+
+“How did you know?”`,
+        choices: [
+            { label: "Stay", next: "onigokgo2-1-1" },
+            { label: "Leave", next: null }
+        ]
+    },
+    {
+        id: "onigokgo2-1-1",
+        conversationId: "onigokgo",
+        text: `“The nightingale told me. Now you’re it!”
+
+The child who was caught flashes a bright smile and runs off toward the enormous tree in the distance.
+
+The child who had been the seeker follows after them.`,
+        choices: [
+            { label: "Leave", next: null }
+        ]
+    },
+    {
+        id: "onigokgo2-2",
+        conversationId: "onigokgo",
+        text: `The seeker searches here and there, but everywhere is dead silent.
+
+Before long, they grow tired and sink down onto the ground.
+
+“I give up! Come out, everyone! I’m tired.”
+
+But no one comes out.
+
+“Did you all go home? Where are you guys?”
+
+The surroundings remain silent.`,
+        choices: [
+            { label: "Leave", next: null }
+        ]
+    }
+];
+
+const theaterScenes = [
+    {
+        text: `“Don’t cry, my darling. You’ve had your cry; that’s enough… Let us talk now, let us think of some plan.”
+
+“…Say it again.”`
+    },
+    {
+        text: `“Don’t cry, my darling. You’ve had your cry; that’s enough…”
+
+“No. A little gentler. That line is very important.”`
+    },
+    {
+        text: `“Don’t cry, my darling…”
+
+“No, Jack. Just a little more… like you care for them very deeply…”`
+    },
+    {
+        text: `They look into each other’s eyes.
+
+For a very long time.
+
+No tears fall from either of their eyes.`
+    },
+    {
+        text: `“Do you think we can keep doing the play?”
+
+“Still… at least until the end of this year…”`
+    },
+    {
+        text: `“Then, one more time…”
+
+“All right.”
+
+(A pause.)
+
+“Don’t cry, my darling. You’ve had your cry; that’s enough… Let us talk now, let us think of some plan.”`
+    }
+];
+
+const theaterPopups = theaterScenes.map(function (scene, index) {
+    return {
+        ...scene,
+        id: `theater${index + 1}`,
+        conversationId: "theater",
+        randomStart: index === 0,
+        yesLabel: "Continue",
+        noLabel: "Leave",
+        hideContinue: index === theaterScenes.length - 1,
+        yesNext: index < theaterScenes.length - 1 ? `theater${index + 2}` : null,
+        noNext: null
+    };
+});
+
+const dogCrowPopups = [
+    {
+        id: "dogCrow1",
+        conversationId: "dogCrow",
+        randomStart: true,
+        text: `“Woof woof.”
+“Caw caw.”`,
+        choices: [
+            { label: "Woof", next: "dogCrow2" },
+            { label: "Caw", next: "dogCrow2" },
+            { label: "Leave", next: null }
+        ]
+    },
+    {
+        id: "dogCrow2",
+        conversationId: "dogCrow",
+        text: `“Caw caw caw caw!”
+“Woof… woof…”`,
+        choices: [
+            { label: "Woof!", next: "dogCrow3" },
+            { label: "Caaaw…", next: "dogCrow3" },
+            { label: "Leave", next: null }
+        ]
+    },
+    {
+        id: "dogCrow3",
+        conversationId: "dogCrow",
+        text: `“Woof woof woof woof!!”
+“Caaaw! Caw!”`,
+        choices: [
+            { label: "Intervene", next: "dogCrow4-1" },
+            { label: "Stay still", next: "dogCrow4-2" }
+        ]
+    },
+    {
+        id: "dogCrow4-1",
+        conversationId: "dogCrow",
+        text: `“Whine… Hmph!”
+“Caaaw! Flap flap!”
+
+The fight seems to be over, but the crow begins staring at you with curious eyes.`,
+        choices: [
+            { label: "Leave", next: null }
+        ]
+    },
+    {
+        id: "dogCrow4-2",
+        conversationId: "dogCrow",
+        text: `The dog tears at the crow’s feathers with its teeth, while the crow scratches at the dog’s face.
+They continue their seemingly endless fight.`,
+        choices: [
+            { label: "Leave", next: null }
+        ]
+    }
+];
+
+const popupData = [
 
     {
         id: "free1",
         conversationId: "free1",
         randomStart: true,
-        text: `I thought it was...`,
+        text: `A middle-aged man is singing. Somehow, you can hear what he’s thinking.
+
+“I’ve always wanted to be a musical actor!”
+
+He’s not quite good enough to be a singer, but he’s pleasant enough to listen to.
+`,
 
     },
-    ...maskPopups
+
+    {
+        id: "free2",
+        conversationId: "free2",
+        randomStart: true,
+        text: `A group of people runs past…
+Once you start running, you don’t want to stop.
+`,
+
+    },
+    {
+        id: "free3",
+        conversationId: "free3",
+        randomStart: true,
+        text: `There’s someone just like you.
+Standing frozen in an awkward pose, staring into empty space forever.`,
+
+    },
+    {
+        id: "free4",
+        conversationId: "free4",
+        randomStart: true,
+        text: `When I get older losing my hair
+Many years from now
+Will you still be sending me a Valentine?
+`,
+
+    },
+
+    {
+        id: "free5",
+        conversationId: "free5",
+        randomStart: true,
+        text: `When you’re happy, it’s okay to forget about me.
+There’s no need for me to get in the way when you’re having fun.`,
+
+    },
+
+    {
+        id: "free6",
+        conversationId: "free6",
+        randomStart: true,
+        text: `When you’re with your friends,
+I’ll whistle from the sidelines like a spectator.
+`,
+
+    },
+
+    {
+        id: "free7",
+        conversationId: "free7",
+        randomStart: true,
+        text: `The city keeps being redeveloped, while the avenue next door
+fades beneath the dust,
+and a lukewarm whirlwind, smoldering gray, blows through.
+
+`,
+
+    },
+
+    ...maskPopups,
+    ...loversPopups,
+    ...onigokgoPopups,
+    ...theaterPopups,
+    ...dogCrowPopups
 ]
 
 const closedConversations = new Set();
@@ -207,7 +502,25 @@ function fillPopup(popup, selectedPopup) {
 
     const popupChoices = popup.querySelector(".popupChoices");
 
-    const hasChoices = 
+    if (selectedPopup.choices) {
+        popupChoices.replaceChildren();
+
+        selectedPopup.choices.forEach(function (choice) {
+            const choiceButton = document.createElement("button");
+            choiceButton.type = "button";
+            choiceButton.textContent = choice.label;
+            choiceButton.dataset.next = choice.next || "";
+            choiceButton.addEventListener("click", function () {
+                choosePopup(choiceButton);
+            });
+            popupChoices.appendChild(choiceButton);
+        });
+
+        popupChoices.hidden = false;
+        return;
+    }
+
+    const hasChoices =
         selectedPopup.yesLabel !== undefined && 
         selectedPopup.noLabel !== undefined;
 
@@ -223,6 +536,7 @@ function fillPopup(popup, selectedPopup) {
         );
 
         yesButton.textContent = selectedPopup.yesLabel;
+        yesButton.hidden = selectedPopup.hideContinue === true;
         noButton.textContent = selectedPopup.noLabel;
 
     }
@@ -281,7 +595,9 @@ function choosePopup(button) {
 
     let nextPopupId;
 
-    if (selectedChoice === "yes") {
+    if (button.hasAttribute("data-next")) {
+        nextPopupId = button.dataset.next;
+    } else if (selectedChoice === "yes") {
         nextPopupId = currentPopup.yesNext;
     } else {
         nextPopupId = currentPopup.noNext;
