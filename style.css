@@ -234,7 +234,7 @@ body {
 .letterTemplate {
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: 200px;
+    margin-bottom: 230px;
     box-sizing: border-box;
     position: relative;
     width: 100%;
@@ -727,7 +727,7 @@ body {
 
   margin-left: 7%;
  
-  margin-bottom: 200px;
+  margin-bottom: 250px;
   padding-bottom: 5px;
   display: grid;
   border: 2px dotted;
@@ -1138,7 +1138,7 @@ body {
 }
 
 .birdCloudTemplate.cloud {
-    margin-bottom: 70px;
+    margin-bottom: 150px;
     background-image: url("use_image/sky2.png");
     background-size: 600px auto;
     background-repeat: repeat-x;
@@ -1150,10 +1150,218 @@ body {
 
 }
 
+.brokenWindow {
+    width: 100%;
+    max-width: 1000px;
+    margin-bottom: 200px;
+    margin-inline: auto;
+}
 
+.brokenWindowContainer {
+    position: relative;
+    border: dotted 1.5px;
+    border-color:  rgb(119, 100, 68);
+}
+
+.brokenWindowCaption {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.brokenWindowLandscape,
+.brokenWindowBlur,
+.brokenWindowFrame {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.brokenWindowBlur,
+.brokenWindowFrame {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.brokenWindowGrid {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: 441fr 118fr 18fr 119fr 20fr 103fr 50fr 99fr 32fr;
+    grid-template-rows: 35fr 161fr 23fr 166fr 16fr 168fr 22fr 159fr;
+    pointer-events: none;
+}
+
+/* 창문 칸 클릭 영역 */
+.brokenWindowPane {
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font-size: 0;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.brokenWindowPane.revealed {
+    cursor: default;
+}
+
+.brokenWindowPane img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: scale-down;
+}
+
+.brokenWindowPane[data-pane^="1_"] { grid-row: 2; }
+.brokenWindowPane[data-pane^="2_"] { grid-row: 4; }
+.brokenWindowPane[data-pane^="3_"] { grid-row: 6; }
+.brokenWindowPane[data-pane^="4_"] { grid-row: 8; }
+
+.brokenWindowPane[data-pane$="_1"] { grid-column: 2; }
+.brokenWindowPane[data-pane$="_2"] { grid-column: 4; }
+.brokenWindowPane[data-pane$="_3"] { grid-column: 6; }
+.brokenWindowPane[data-pane$="_4"] { grid-column: 8; }
+
+.windowButton {
+    width: 300px;
+    max-width: 100%;
+    height: 25px;
+    border: 1px solid;
+    border-color: rgb(119, 100, 68);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 16px;
+    color: black;
+
+    background-color: transparent;
+    cursor: pointer;
+    margin-bottom: 5px;
+}
+
+.singleEvent {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    width: 600px;
+    max-width: 100%;
+    margin: 0 0 200px;
+    margin-left: var(--single-x, 0px);
+}
+
+.singleEventImageRow,
+.singleEventInfoRow {
+    min-width: 0;
+}
+
+.singleEventInfoRow {
+    padding-inline: 10px;
+}
+
+.singleEventImage {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.singleEventText {
+    margin: 0;
+    padding-top: 16px;
+    text-align: center;
+}
+
+.singleEventButtonRow {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding-top: 10px;
+}
+
+.singleEventButtonRow .windowButton {
+    flex: 1;
+    min-width: 0;
+    max-width: 300px;
+    height: auto;
+    min-height: 30px;
+    margin-bottom: 0;
+    padding: 4px;
+}
+
+.restoreEvent {
+    grid-template-rows: auto auto auto;
+}
+
+.restoreDoll {
+    grid-template-rows: auto auto;
+}
+
+.restoreText {
+    max-width: 600px;
+    margin: 0 auto 12px;
+    padding: 0 12px;
+    text-align: center;
+}
+
+.restoreText:empty {
+    display: none;
+}
+
+.restoreEvent.completed .restoreText,
+.restoreDoll .restoreText {
+    margin-top: 12px;
+}
+
+.restoreEvent:not(.restoreDoll) {
+    display: grid;
+    width: 100vw;
+    margin: 0 0 200px calc(50% - 50vw);
+}
+
+.restoreBoard {
+    position: relative;
+    width: 100%;
+    height: 600px;
+    overflow: hidden;
+}
+
+.restorePart {
+    position: absolute;
+    display: block;
+    max-width: none;
+}
+
+.restorePart {
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    transition: left 250ms ease, top 250ms ease;
+}
+
+.restoreBoard:not(.ready) .restorePart {
+    visibility: hidden;
+}
+
+.restorePart.dragging {
+    cursor: grabbing;
+    transition: none;
+}
+
+.restoreButtonRow {
+    display: flex;
+    justify-content: center;
+    padding: 12px;
+}
 
 /*모바일의 경우*/
 @media (max-width: 600px) {
+    .singleEvent {
+        width: 100vw;
+        max-width: none;
+        margin-left: calc(50% - 50vw);
+    }
+
     body {
         padding-left: 10px;
         padding-right: 10px;
@@ -1285,7 +1493,7 @@ body {
     .hanabi {
         margin-left: -10px;
         margin-top: 20px;
-        margin-bottom: 50px;
+        margin-bottom: 100px;
         background-repeat: repeat-y;
         height: 800px;
         

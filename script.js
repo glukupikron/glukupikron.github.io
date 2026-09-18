@@ -1,6 +1,8 @@
 let runScroll;
+let restoreEventOpen = false;
 
 function checkBottom () { 
+    if (restoreEventOpen) return;
     const reachedBottom = window.scrollY + window.innerHeight >=
     document.documentElement.scrollHeight - 1;
 
@@ -425,8 +427,7 @@ I’ll whistle from the sidelines like a spectator.
         id: "free7",
         conversationId: "free7",
         randomStart: true,
-        text: `The city keeps being redeveloped, while the avenue next door
-fades beneath the dust,
+        text: `The city keeps being redeveloped, while the avenue next door fades beneath the dust,
 and a lukewarm whirlwind, smoldering gray, blows through.
 
 `,
@@ -699,6 +700,40 @@ const canvasRowSources = [
 let previousCanvasRowId = null;
 const completedCanvasIds = new Set();
 
+// 공통 single 이벤트: 파일 이름, 마지막 단계, 문장과 버튼 문구만 다름
+const singleEventScenes = {
+    doll: { imagePrefix: "doll_b", lastStep: 3, sentence: "Doll sentence goes here.", nextLabel: "Next" },
+    figure: { imagePrefix: "figure_b_", lastStep: 3, sentence: "Figure sentence goes here.", nextLabel: "Next" },
+    leaf: { imagePrefix: "leaf_b_", lastStep: 4, sentence: "Leaf sentence goes here.", nextLabel: "Next" },
+    envelope: { imagePrefix: "envelope_b_", lastStep: 3, sentence: "Envelope sentence goes here.", nextLabel: "Next" },
+    plate: { imagePrefix: "plate_b", lastStep: 4, sentence: "Plate sentence goes here.", nextLabel: "Next" }
+};
+const singleEventProgress = new Map();
+
+// Each offset is the part's original top-left corner inside its _whole image.
+const restoreScenes = {
+    figure: {
+        parts: [[0, 127], [598, 227], [517, 115], [371, 306]]
+    },
+    envelope: {
+        parts: [[112, 139], [220, 151], [100, 913], [611, 902]]
+    },
+    plate: {
+        parts: [[156, 262], [553, 158], [890, 437], [887, 843], [757, 851], [178, 844]]
+    }
+};
+const restoredSingles = new Set();
+const restorePuzzleProgress = new Map();
+const restoreCompleteText = "You feel much better.";
+const restoreMessageDelay = 1500;
+let dollRestoreStep = 3;
+
+function resumeAfterRestore() {
+    if (!restoreEventOpen) return;
+    restoreEventOpen = false;
+    scrollAgain();
+}
+
 //랜덤 이벤트
 
 function randomEvent() {
@@ -707,6 +742,15 @@ function randomEvent() {
         function (source) { 
             if (source === birdCloudSource) {
                 return false;
+            }
+            if (source.classList.contains("restoreEvent")) {
+                const type = source.dataset.restore;
+                return (singleEventProgress.get(type) ?? 0) >= singleEventScenes[type].lastStep
+                    && !restoredSingles.has(type);
+            }
+            if (source.classList.contains("singleEvent")) {
+                const type = source.dataset.single;
+                return (singleEventProgress.get(type) ?? 0) < singleEventScenes[type].lastStep;
             }
             const isCanvas = source.classList.contains("canvasGrid");
             const everyCanvasIsCompleted = completedCanvasIds.size === canvasRowSources.length;
@@ -738,14 +782,20 @@ function randomEvent() {
     } else {
         selectedSource = pickRandom(eventCandidates);
         regularEventCount++;
+        previousEventSource = selectedSource;
     }
 
-    previousEventSource = selectedSource;
 
 
     const newEvent = selectedSource.cloneNode(true);
     const eventArea = document.querySelector(".eventArea");
     eventArea.appendChild(newEvent);
+
+    if (newEvent.classList.contains("restoreEvent")) {
+        setupRestoreEvent(newEvent);
+    } else if (newEvent.classList.contains("singleEvent")) {
+        setupSingleEvent(newEvent);
+    }
 
     if (newEvent.classList.contains("birdCloudTemplate")) {
         startBirdCloud(newEvent);
@@ -854,6 +904,7 @@ function randomEvent() {
             }
 
             const selectedPuzzle = pickRandom(puzzleCandidates);
+            previousPuzzleImage = selectedPuzzle.image;
 
             const puzzleGuide = newEvent.querySelector(".puzzleGuide");
             puzzleGuide.textContent = selectedPuzzle.guide;
@@ -868,6 +919,428 @@ function randomEvent() {
         }
     
 }
+
+function setupSingleEvent(eventElement) {
+    const type = eventElement.dataset.single;
+    const scene = singleEventScenes[type];
+    const step = singleEventProgress.get(type) ?? 0;
+
+    eventElement.appendChild(
+        document.querySelector("#singleEventLayout").content.cloneNode(true)
+    );
+    eventElement.querySelector(".singleEventText").textContent = scene.sentence;
+    eventElement.querySelector(".singleEventNext").textContent = scene.nextLabel;
+    showSingleEventStep(eventElement, step);
+
+    placeSingleEvent(eventElement);
+}
+
+function placeSingleEvent(eventElement) {
+    const freeSpace = Math.max(0, eventElement.parentElement.clientWidth - eventElement.offsetWidth);
+    eventElement.style.setProperty("--single-x", `${Math.random() * freeSpace}px`);
+}
+
+function showSingleEventStep(eventElement, step) {
+    const type = eventElement.dataset.single;
+    const scene = singleEventScenes[type];
+    const imageName = step === 0 ? `${type}_whole` : `${scene.imagePrefix}${step}`;
+
+    eventElement.dataset.step = step;
+    eventElement.querySelector(".singleEventImage").src = `use_image/single/${imageName}.png`;
+    eventElement.querySelector(".singleEventNext").hidden = step >= scene.lastStep;
+}
+
+document.querySelector(".eventArea").addEventListener("click", function (event) {
+    const singleEvent = event.target.closest(".singleEvent");
+    if (!singleEvent || singleEvent.classList.contains("restoreEvent")) return;
+
+    if (event.target.closest(".singleEventLeave")) {
+        scrollAgain();
+        return;
+    }
+
+    stopScroll();
+
+    const nextButton = event.target.closest(".singleEventNext");
+    if (!nextButton) return;
+
+    const type = singleEvent.dataset.single;
+    const currentStep = singleEventProgress.get(type) ?? 0;
+    if (Number(singleEvent.dataset.step) < currentStep) {
+        showSingleEventStep(singleEvent, currentStep);
+        return;
+    }
+
+    const step = currentStep + 1;
+    singleEventProgress.set(type, step);
+    showSingleEventStep(singleEvent, step);
+});
+
+function setupRestoreEvent(eventElement) {
+    const type = eventElement.dataset.restore;
+    restoreEventOpen = true;
+    stopScroll();
+    requestAnimationFrame(() => eventElement.scrollIntoView({ block: "start", behavior: "smooth" }));
+
+    if (type === "doll") {
+        eventElement.appendChild(
+            document.querySelector("#singleEventLayout").content.cloneNode(true)
+        );
+        eventElement.querySelector(".singleEventText").replaceWith(
+            eventElement.querySelector(".restoreText")
+        );
+        eventElement.querySelector(".singleEventNext").textContent = "Restore";
+        eventElement.querySelector(".singleEventNext").classList.add("restoreDollButton");
+        eventElement.querySelector(".singleEventLeave").classList.add("restoreLeave");
+        showDollRestoreStep(eventElement);
+        placeSingleEvent(eventElement);
+        return;
+    }
+
+    eventElement.appendChild(
+        document.querySelector("#restorePuzzleLayout").content.cloneNode(true)
+    );
+    const board = eventElement.querySelector(".restoreBoard");
+    const scene = restoreScenes[type];
+    const reference = new Image();
+    reference.src = `use_image/single/${type}_whole.png`;
+
+    const pieces = scene.parts.map(function (target, index) {
+        const image = document.createElement("img");
+        image.className = "restorePart";
+        image.src = `use_image/single/${type}_parts_${index + 1}.png`;
+        image.alt = `${type} piece ${index + 1}`;
+        image.draggable = false;
+        board.appendChild(image);
+        const piece = { image, target };
+        piece.group = new Set([piece]);
+        return piece;
+    });
+    const savedProgress = restorePuzzleProgress.get(type);
+    const hasSavedProgress = savedProgress?.length === pieces.length;
+    if (hasSavedProgress) {
+        const groups = new Map();
+        pieces.forEach(function (piece, index) {
+            const groupId = savedProgress[index].group;
+            if (!groups.has(groupId)) groups.set(groupId, new Set());
+            piece.group = groups.get(groupId);
+            piece.group.add(piece);
+        });
+    }
+    const mobilePieces = [...pieces].sort(() => Math.random() - 0.5);
+    let topLayer = pieces.length;
+    let scale = 0;
+    let completedHere = false;
+
+    function position(piece) {
+        return [parseFloat(piece.image.style.left), parseFloat(piece.image.style.top)];
+    }
+
+    function saveProgress() {
+        if (!scale || restoredSingles.has(type)) return;
+        const groupIds = new Map();
+        restorePuzzleProgress.set(type, pieces.map(function (piece) {
+            if (!groupIds.has(piece.group)) groupIds.set(piece.group, groupIds.size);
+            const [x, y] = position(piece);
+            return { x: x / scale, y: y / scale, group: groupIds.get(piece.group) };
+        }));
+    }
+
+    function moveGroup(group, dx, dy) {
+        for (const piece of group) {
+            const [x, y] = position(piece);
+            piece.image.style.left = `${x + dx}px`;
+            piece.image.style.top = `${y + dy}px`;
+        }
+    }
+
+    function groupBounds(group) {
+        const members = [...group];
+        return {
+            left: Math.min(...members.map(piece => position(piece)[0])),
+            top: Math.min(...members.map(piece => position(piece)[1])),
+            right: Math.max(...members.map(piece => position(piece)[0] + piece.image.offsetWidth)),
+            bottom: Math.max(...members.map(piece => position(piece)[1] + piece.image.offsetHeight))
+        };
+    }
+
+    function keepGroupInside(group) {
+        const bounds = groupBounds(group);
+        const dx = bounds.left < 0 ? -bounds.left
+            : Math.min(0, board.clientWidth - bounds.right);
+        const dy = bounds.top < 0 ? -bounds.top
+            : Math.min(0, board.clientHeight - bounds.bottom);
+        moveGroup(group, dx, dy);
+    }
+
+    function placeCompletedImage(group) {
+        const bounds = groupBounds(group);
+        const imageWidth = bounds.right - bounds.left;
+        const imageHeight = bounds.bottom - bounds.top;
+
+        for (const piece of group) piece.image.style.transition = "none";
+        moveGroup(group, (board.clientWidth - imageWidth) / 2 - bounds.left, 12 - bounds.top);
+        board.style.height = `${imageHeight + 24}px`;
+        requestAnimationFrame(function () {
+            for (const piece of group) piece.image.style.removeProperty("transition");
+            eventElement.scrollIntoView({ block: "start", behavior: "smooth" });
+        });
+    }
+
+    function layout() {
+        if (!reference.naturalWidth || pieces.some(piece => !piece.image.naturalWidth)) return;
+
+        const mobile = window.matchMedia("(max-width: 600px)").matches;
+        const boardWidth = board.clientWidth;
+        const previousScale = scale;
+        scale = Math.min(
+            (boardWidth - 32) / reference.naturalWidth,
+            (mobile ? 480 : 500) / reference.naturalHeight
+        );
+        pieces.forEach(function (piece) {
+            piece.image.style.width = `${piece.image.naturalWidth * scale}px`;
+            piece.image.style.height = `${piece.image.naturalHeight * scale}px`;
+        });
+
+        let rowX = 12;
+        let rowY = 16;
+        let rowHeight = 0;
+        const mobileStarts = new Map();
+        if (mobile) {
+            mobilePieces.forEach(function (piece) {
+                const width = piece.image.naturalWidth * scale;
+                const height = piece.image.naturalHeight * scale;
+                if (rowX + width > boardWidth - 12 && rowX > 12) {
+                    rowX = 12;
+                    rowY += rowHeight + 12;
+                    rowHeight = 0;
+                }
+                mobileStarts.set(piece, [rowX, rowY]);
+                rowX += width + 12;
+                rowHeight = Math.max(rowHeight, height);
+            });
+        }
+
+        // 리스토어 여백
+        const mobileExtraSpace = 200;
+        board.style.height = mobile
+            ? `${Math.max(rowY + rowHeight, reference.naturalHeight * scale) + mobileExtraSpace}px`
+            : "600px";
+
+        pieces.forEach(function (piece, index) {
+            let start;
+            if (previousScale) {
+                start = position(piece).map(value => value * scale / previousScale);
+            } else if (hasSavedProgress) {
+                start = [savedProgress[index].x * scale, savedProgress[index].y * scale];
+            } else if (mobile) {
+                start = mobileStarts.get(piece);
+            } else {
+                start = [
+                    Math.random() * (boardWidth - piece.image.offsetWidth),
+                    Math.random() * (600 - piece.image.offsetHeight)
+                ];
+            }
+            const [x, y] = start;
+            piece.image.style.left = `${x}px`;
+            piece.image.style.top = `${y}px`;
+        });
+
+        new Set(pieces.map(piece => piece.group)).forEach(keepGroupInside);
+        if (completedHere) placeCompletedImage(pieces[0].group);
+        board.classList.add("ready");
+    }
+
+    function joinNearby(group) {
+        const tolerance = Math.max(24, Math.min(40, reference.naturalWidth * scale * 0.08));
+
+        while (group.size < pieces.length) {
+            let best = null;
+            for (const member of group) {
+                const [memberX, memberY] = position(member);
+                for (const other of pieces) {
+                    if (group.has(other)) continue;
+                    const [otherX, otherY] = position(other);
+                    const dx = otherX + (member.target[0] - other.target[0]) * scale - memberX;
+                    const dy = otherY + (member.target[1] - other.target[1]) * scale - memberY;
+                    const distance = Math.hypot(dx, dy);
+                    if (distance <= tolerance && (!best || distance < best.distance)) {
+                        best = { other, dx, dy, distance };
+                    }
+                }
+            }
+            if (!best) break;
+
+            moveGroup(group, best.dx, best.dy);
+            const joinedGroup = best.other.group;
+            for (const member of group) {
+                member.group = joinedGroup;
+                joinedGroup.add(member);
+            }
+            group = joinedGroup;
+            keepGroupInside(group);
+        }
+
+        if (group.size === pieces.length && !restoredSingles.has(type)) {
+            completedHere = true;
+            restoredSingles.add(type);
+            restorePuzzleProgress.delete(type);
+            const caption = eventElement.querySelector(".restoreText");
+            caption.textContent = restoreCompleteText;
+            board.after(caption);
+            eventElement.classList.add("completed");
+            setTimeout(() => placeCompletedImage(group), 260);
+            setTimeout(resumeAfterRestore, restoreMessageDelay);
+        }
+    }
+
+    pieces.forEach(function (piece) {
+        const image = piece.image;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
+        let pointerX = 0;
+        let pointerY = 0;
+        let scrollFrame = null;
+
+        function moveDraggedGroup() {
+            const boardRect = board.getBoundingClientRect();
+            const [pieceX, pieceY] = position(piece);
+            const bounds = groupBounds(piece.group);
+            const dx = Math.max(-bounds.left, Math.min(
+                board.clientWidth - bounds.right,
+                pointerX - boardRect.left - dragOffsetX - pieceX
+            ));
+            const dy = Math.max(-bounds.top, Math.min(
+                board.clientHeight - bounds.bottom,
+                pointerY - boardRect.top - dragOffsetY - pieceY
+            ));
+            moveGroup(piece.group, dx, dy);
+        }
+
+        function scrollWhileDragging() {
+            const edge = 70;
+            const direction = pointerY < edge ? -1 : pointerY > window.innerHeight - edge ? 1 : 0;
+            if (direction) {
+                window.scrollBy(0, direction * 10);
+                moveDraggedGroup();
+            }
+            if (board.clientHeight > window.innerHeight) {
+                scrollFrame = requestAnimationFrame(scrollWhileDragging);
+            }
+        }
+
+        image.addEventListener("pointerdown", function (event) {
+            if (restoredSingles.has(type)) return;
+            restoreEventOpen = true;
+            stopScroll();
+            event.preventDefault();
+            const boardRect = board.getBoundingClientRect();
+            dragOffsetX = event.clientX - boardRect.left - parseFloat(image.style.left);
+            dragOffsetY = event.clientY - boardRect.top - parseFloat(image.style.top);
+            pointerX = event.clientX;
+            pointerY = event.clientY;
+            for (const member of piece.group) {
+                member.image.style.zIndex = ++topLayer;
+                member.image.classList.add("dragging");
+            }
+            image.style.zIndex = ++topLayer;
+            image.setPointerCapture(event.pointerId);
+            scrollFrame = requestAnimationFrame(scrollWhileDragging);
+        });
+
+        image.addEventListener("pointermove", function (event) {
+            if (!image.hasPointerCapture(event.pointerId)) return;
+            pointerX = event.clientX;
+            pointerY = event.clientY;
+            moveDraggedGroup();
+        });
+
+        image.addEventListener("pointerup", function (event) {
+            if (!image.hasPointerCapture(event.pointerId)) return;
+            pointerX = event.clientX;
+            pointerY = event.clientY;
+            moveDraggedGroup();
+            image.releasePointerCapture(event.pointerId);
+            cancelAnimationFrame(scrollFrame);
+            for (const member of piece.group) {
+                member.image.classList.remove("dragging");
+            }
+            joinNearby(piece.group);
+            saveProgress();
+        });
+
+        image.addEventListener("pointercancel", function () {
+            cancelAnimationFrame(scrollFrame);
+            for (const member of piece.group) member.image.classList.remove("dragging");
+            saveProgress();
+        });
+
+        image.addEventListener("lostpointercapture", function () {
+            cancelAnimationFrame(scrollFrame);
+            for (const member of piece.group) member.image.classList.remove("dragging");
+        });
+    });
+
+    eventElement.querySelector(".restoreLeave").addEventListener("click", saveProgress);
+
+    Promise.all([reference, ...pieces.map(piece => piece.image)].map(image => image.decode()))
+        .then(function () {
+            layout();
+            window.addEventListener("resize", layout);
+        });
+}
+
+function showDollRestoreStep(eventElement) {
+    const step = dollRestoreStep;
+    const imageName = step === 0 ? "doll_whole" : `doll_b${step}`;
+    eventElement.dataset.step = step;
+    eventElement.querySelector(".singleEventImage").src = `use_image/single/${imageName}.png`;
+    eventElement.querySelector(".restoreDollButton").hidden = step === 0;
+}
+
+document.querySelector(".eventArea").addEventListener("click", function (event) {
+    const restoreEvent = event.target.closest(".restoreEvent");
+    if (!restoreEvent) return;
+
+    if (event.target.closest(".restoreLeave")) {
+        resumeAfterRestore();
+        return;
+    }
+
+    if (event.target.closest(".restoreDollButton")) {
+        stopScroll();
+        if (Number(restoreEvent.dataset.step) !== dollRestoreStep) {
+            showDollRestoreStep(restoreEvent);
+            return;
+        }
+        dollRestoreStep--;
+        showDollRestoreStep(restoreEvent);
+        if (dollRestoreStep === 0) {
+            restoredSingles.add("doll");
+            const caption = restoreEvent.querySelector(".restoreText");
+            caption.textContent = restoreCompleteText;
+            caption.scrollIntoView({ block: "nearest", behavior: "smooth" });
+            restoreEvent.classList.add("completed");
+            setTimeout(resumeAfterRestore, restoreMessageDelay);
+        }
+    }
+});
+
+// brokenWindow 표시
+document.querySelector(".eventArea").addEventListener("click", function (event) {
+    const pane = event.target.closest(".brokenWindowPane");
+
+    if (!pane || pane.classList.contains("revealed")) {
+        return;
+    }
+
+    const piece = document.createElement("img");
+    piece.src = `use_image/break/${pane.dataset.pane}.png`;
+    piece.alt = `Broken window pane ${pane.dataset.pane.replace("_", "-")}`;
+
+    pane.replaceChildren(piece);
+    pane.classList.add("revealed");
+});
 
 //캔버스 그리기
 

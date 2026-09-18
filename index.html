@@ -185,13 +185,82 @@
     
   </div>
 </div>
-
+<!--새와 구름-->
 <div class ="eventTemplate birdCloudTemplate">
   <img class = "birdCloudImage">
 </div>
 
+<!--깨진 창문-->
+<div class ="eventTemplate brokenWindow" onclick = "stopScroll()">
+  <div class="brokenWindowContainer">
+    <img class="brokenWindowLandscape" src="use_image/break/dither풍경.png" alt="">
+    <img class="brokenWindowBlur" src="use_image/break/dither블러.png" alt="">
+    <img class="brokenWindowFrame" src="use_image/break/dither창틀.png" alt="">
+    <div class="brokenWindowGrid">
+      <button type="button" class="brokenWindowPane" data-pane="1_1">1-1</button>
+      <button type="button" class="brokenWindowPane" data-pane="1_2">1-2</button>
+      <button type="button" class="brokenWindowPane" data-pane="1_3">1-3</button>
+      <button type="button" class="brokenWindowPane" data-pane="1_4">1-4</button>
+      <button type="button" class="brokenWindowPane" data-pane="2_1">2-1</button>
+      <button type="button" class="brokenWindowPane" data-pane="2_2">2-2</button>
+      <button type="button" class="brokenWindowPane" data-pane="2_3">2-3</button>
+      <button type="button" class="brokenWindowPane" data-pane="2_4">2-4</button>
+      <button type="button" class="brokenWindowPane" data-pane="3_1">3-1</button>
+      <button type="button" class="brokenWindowPane" data-pane="3_2">3-2</button>
+      <button type="button" class="brokenWindowPane" data-pane="3_3">3-3</button>
+      <button type="button" class="brokenWindowPane" data-pane="3_4">3-4</button>
+      <button type="button" class="brokenWindowPane" data-pane="4_1">4-1</button>
+      <button type="button" class="brokenWindowPane" data-pane="4_2">4-2</button>
+      <button type="button" class="brokenWindowPane" data-pane="4_3">4-3</button>
+      <button type="button" class="brokenWindowPane" data-pane="4_4">4-4</button>
+    </div>
+  </div>
+  <div class="brokenWindowCaption">
+    <p>You’re getting anxious. You throw a ball.</p>
+    <button type="button" class="windowButton" onclick="scrollAgain()">Leave</button>
+  </div>
+</div>
+
+<!-- 공통 single 이벤트: 내용은 아래 템플릿을 복사해서 채움 -->
+<div class="eventTemplate singleEvent" data-single="doll"></div>
+<div class="eventTemplate singleEvent" data-single="figure"></div>
+<div class="eventTemplate singleEvent" data-single="leaf"></div>
+<div class="eventTemplate singleEvent" data-single="envelope"></div>
+<div class="eventTemplate singleEvent" data-single="plate"></div>
+
+<div class="eventTemplate restoreEvent restoreDoll singleEvent" data-restore="doll">
+  <p class="restoreText">Restore the doll?</p>
+</div>
+<div class="eventTemplate restoreEvent" data-restore="figure">
+  <p class="restoreText">She seems fragile. You may want to put her back together.</p>
+</div>
+<div class="eventTemplate restoreEvent" data-restore="envelope">
+  <p class="restoreText">Perhaps you will want to read it again someday.</p>
+</div>
+<div class="eventTemplate restoreEvent" data-restore="plate">
+  <p class="restoreText">You and your loved one loved this plate.</p>
+</div>
+
 
 </div>
+
+<template id="singleEventLayout">
+  <div class="singleEventImageRow"><img class="singleEventImage" alt=""></div>
+  <div class="singleEventInfoRow">
+    <p class="singleEventText"></p>
+    <div class="singleEventButtonRow">
+      <button type="button" class="windowButton singleEventNext">Next</button>
+      <button type="button" class="windowButton singleEventLeave">Leave</button>
+    </div>
+  </div>
+</template>
+
+<template id="restorePuzzleLayout">
+  <div class="restoreBoard"></div>
+  <div class="restoreButtonRow">
+    <button type="button" class="windowButton restoreLeave">Leave</button>
+  </div>
+</template>
 
 
 <!--event area-->
