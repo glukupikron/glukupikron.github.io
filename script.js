@@ -2019,6 +2019,42 @@ function selectHanabi(select) {
     }
 }
 
+//carStreet
+
+function selectCar(select) {
+    const carStreet = select.closest(".carStreet");
+    if (select.value === "yes") {
+        setTimeout(function() {
+            carStreet.style.backgroundImage = 'url("use_image/car_umzzal.gif")';
+        },3000);
+
+        setTimeout(function () { createDebris(15);}, 10000);
+        
+    }
+
+    if (select.value === "no") {
+        scrollAgain();
+    }
+}
+
+// shrimp
+
+function selectShrimp(select) {
+    const shrimp = select.closest(".shrimp");
+    if (select.value === "yes") {
+        setTimeout(function() {
+            shrimp.style.backgroundImage = 'url("use_image/shrimp_umzzal.gif")';
+        },3000);
+
+        setTimeout(function () { createDebris(15);}, 10000);
+        
+    }
+
+    if (select.value === "no") {
+        scrollAgain();
+    }
+}
+
 // jukebox
 
 function chooseTrackButton(button){

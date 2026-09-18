@@ -934,6 +934,87 @@ body {
   position: relative;
 }
 
+/*자동차*/
+
+.carStreet {
+  
+  width: 100vw;
+  height: 500px;   
+  margin-left: -40px;
+  margin-bottom: 200px;
+  padding-bottom: 5px;
+  display: grid;
+  border: 1px solid;
+  border-color: rgb(198, 204, 206);
+  background-image: url(use_image/car_capture.png);
+  background-repeat: repeat-x;
+  background-size: contain;
+  box-sizing: border-box;
+  place-items: center; 
+  font-family : 'Courier New', Courier, monospace;
+  text-align: center;
+ 
+ 
+  grid-template-columns: 1fr; 
+  grid-template-rows: 1.8fr 0.2fr; 
+  gap: 0px 0px; 
+  grid-template-areas: 
+    "."
+    "."; 
+}
+
+.carRow2
+{
+    padding: 5px;
+    line-height: 1.4;
+}
+
+.carStreet:hover {
+  box-shadow:0 0 0 1600px rgba(0,0,0,0.65);/* dark around it */
+  z-index: 10;
+  position: relative;
+}
+
+/*새우*/
+
+.shrimp {
+  
+  width: 100vw;
+  height: 500px;   
+  margin-left: -40px;
+  margin-bottom: 200px;
+  padding-bottom: 5px;
+  display: grid;
+  border: 1px solid;
+  border-color: rgb(198, 204, 206);
+  background-image: url(use_image/shrimp_capture.png);
+  background-repeat: repeat-x;
+  background-size: contain;
+  box-sizing: border-box;
+  place-items: center; 
+  font-family : 'Courier New', Courier, monospace;
+  text-align: center;
+ 
+ 
+  grid-template-columns: 1fr; 
+  grid-template-rows: 1.8fr 0.2fr; 
+  gap: 0px 0px; 
+  grid-template-areas: 
+    "."
+    "."; 
+}
+
+.shrimpRow2
+{
+    padding: 5px;
+    line-height: 1.4;
+}
+
+.shrimp:hover {
+  box-shadow:0 0 0 1600px rgba(0,0,0,0.65);/* dark around it */
+  z-index: 10;
+  position: relative;
+}
 
 /* 하나비 드롭다운 */
 :root {
@@ -1153,7 +1234,7 @@ body {
 .brokenWindow {
     width: 100%;
     max-width: 1000px;
-    margin-bottom: 200px;
+    margin-bottom: 250px;
     margin-inline: auto;
 }
 
@@ -1246,8 +1327,9 @@ body {
     grid-template-rows: auto auto;
     width: 600px;
     max-width: 100%;
-    margin: 0 0 200px;
+    margin: 0 0 300px;
     margin-left: var(--single-x, 0px);
+
 }
 
 .singleEventImageRow,
@@ -1360,6 +1442,7 @@ body {
         width: 100vw;
         max-width: none;
         margin-left: calc(50% - 50vw);
+        padding: 0px;
     }
 
     body {
@@ -1372,6 +1455,19 @@ body {
         z-index: auto;
         position: static;
     }
+
+    .carStreet:hover {
+        box-shadow: none;
+        z-index: auto;
+        position: static;
+    }
+
+    .shrimp:hover {
+        box-shadow: none;
+        z-index: auto;
+        position: static;
+    }
+
 
     .sphere {
         width: 300px;
@@ -1491,6 +1587,22 @@ body {
     }
 
     .hanabi {
+        margin-left: -10px;
+        margin-top: 20px;
+        margin-bottom: 150px;
+        background-repeat: repeat-y;
+        height: 800px;
+        
+    }
+    .carStreet {
+        margin-left: -10px;
+        margin-top: 20px;
+        margin-bottom: 150px;
+        background-repeat: repeat-y;
+        height: 800px;
+        
+    }
+    .shrimp {
         margin-left: -10px;
         margin-top: 20px;
         margin-bottom: 150px;
