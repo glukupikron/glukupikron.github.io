@@ -708,6 +708,7 @@ const singleEventScenes = {
     plate: { imagePrefix: "plate_b", lastStep: 4, wholeSentence: "You feel anxious. What if you dropped it?", brokenSentence: "It was such a beautiful plate...", nextLabel: "Drop" }
 };
 const singleEventProgress = new Map();
+let preloadedSingleImage = null;
 
 // Each offset is the part's original top-left corner inside its _whole image.
 const restoreScenes = {
@@ -724,7 +725,6 @@ const restoreScenes = {
 const restoredSingles = new Set();
 const restorePuzzleProgress = new Map();
 const restoreCompleteText = "You feel much better.";
-const restoreMessageDelay = 1500;
 let dollRestoreStep = 3;
 
 function resumeAfterRestore() {
@@ -954,6 +954,13 @@ function showSingleEventStep(eventElement, step) {
     eventElement.querySelector(".singleEventText").textContent = step >= scene.lastStep
         ? scene.brokenSentence : scene.wholeSentence;
     eventElement.querySelector(".singleEventNext").hidden = step >= scene.lastStep;
+
+    preloadedSingleImage = null;
+    if (step < scene.lastStep) {
+        preloadedSingleImage = new Image();
+        preloadedSingleImage.src = `use_image/single/${scene.imagePrefix}${step + 1}.png`;
+        preloadedSingleImage.decode().catch(() => {});
+    }
 }
 
 document.querySelector(".eventArea").addEventListener("click", function (event) {
@@ -961,6 +968,7 @@ document.querySelector(".eventArea").addEventListener("click", function (event) 
     if (!singleEvent || singleEvent.classList.contains("restoreEvent")) return;
 
     if (event.target.closest(".singleEventLeave")) {
+        preloadedSingleImage = null;
         scrollAgain();
         return;
     }
@@ -1187,7 +1195,6 @@ function setupRestoreEvent(eventElement) {
             board.after(caption);
             eventElement.classList.add("completed");
             setTimeout(() => fitCompletedBoard(group), 260);
-            setTimeout(resumeAfterRestore, restoreMessageDelay);
         }
     }
 
@@ -1316,9 +1323,7 @@ document.querySelector(".eventArea").addEventListener("click", function (event) 
             restoredSingles.add("doll");
             const caption = restoreEvent.querySelector(".restoreText");
             caption.textContent = restoreCompleteText;
-            caption.scrollIntoView({ block: "nearest", behavior: "smooth" });
             restoreEvent.classList.add("completed");
-            setTimeout(resumeAfterRestore, restoreMessageDelay);
         }
     }
 });
