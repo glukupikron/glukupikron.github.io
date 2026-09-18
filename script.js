@@ -2,7 +2,6 @@ let runScroll;
 let restoreEventOpen = false;
 
 function checkBottom () { 
-    if (restoreEventOpen) return;
     const reachedBottom = window.scrollY + window.innerHeight >=
     document.documentElement.scrollHeight - 1;
 
@@ -702,11 +701,11 @@ const completedCanvasIds = new Set();
 
 // 공통 single 이벤트: 파일 이름, 마지막 단계, 문장과 버튼 문구만 다름
 const singleEventScenes = {
-    doll: { imagePrefix: "doll_b", lastStep: 3, sentence: "Doll sentence goes here.", nextLabel: "Next" },
-    figure: { imagePrefix: "figure_b_", lastStep: 3, sentence: "Figure sentence goes here.", nextLabel: "Next" },
-    leaf: { imagePrefix: "leaf_b_", lastStep: 4, sentence: "Leaf sentence goes here.", nextLabel: "Next" },
-    envelope: { imagePrefix: "envelope_b_", lastStep: 3, sentence: "Envelope sentence goes here.", nextLabel: "Next" },
-    plate: { imagePrefix: "plate_b", lastStep: 4, sentence: "Plate sentence goes here.", nextLabel: "Next" }
+    doll: { imagePrefix: "doll_b", lastStep: 3, wholeSentence: "You feel anxious. A stuffed doll catches your eye.", brokenSentence: "Stuffing is spilling out everywhere.", nextLabel: "Tug" },
+    figure: { imagePrefix: "figure_b_", lastStep: 3, wholeSentence: "Maybe breaking it will make you feel better.", brokenSentence: "She is completely broken.", nextLabel: "Break" },
+    leaf: { imagePrefix: "leaf_b_", lastStep: 4, wholeSentence: "The wait feels endless.", brokenSentence: "Only bare branches remain.", nextLabel: "Pluck" },
+    envelope: { imagePrefix: "envelope_b_", lastStep: 3, wholeSentence: "You used to enjoy waiting for a letter. But now?", brokenSentence: "You don't need it anymore.", nextLabel: "Tear" },
+    plate: { imagePrefix: "plate_b", lastStep: 4, wholeSentence: "You feel anxious. What if you dropped it?", brokenSentence: "It was such a beautiful plate...", nextLabel: "Drop" }
 };
 const singleEventProgress = new Map();
 
@@ -928,7 +927,6 @@ function setupSingleEvent(eventElement) {
     eventElement.appendChild(
         document.querySelector("#singleEventLayout").content.cloneNode(true)
     );
-    eventElement.querySelector(".singleEventText").textContent = scene.sentence;
     eventElement.querySelector(".singleEventNext").textContent = scene.nextLabel;
     showSingleEventStep(eventElement, step);
 
@@ -947,6 +945,8 @@ function showSingleEventStep(eventElement, step) {
 
     eventElement.dataset.step = step;
     eventElement.querySelector(".singleEventImage").src = `use_image/single/${imageName}.png`;
+    eventElement.querySelector(".singleEventText").textContent = step >= scene.lastStep
+        ? scene.brokenSentence : scene.wholeSentence;
     eventElement.querySelector(".singleEventNext").hidden = step >= scene.lastStep;
 }
 
