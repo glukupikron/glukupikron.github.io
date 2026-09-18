@@ -704,7 +704,7 @@ const singleEventScenes = {
     doll: { imagePrefix: "doll_b", lastStep: 3, wholeSentence: "You feel anxious. A stuffed doll catches your eye.", brokenSentence: "Stuffing is spilling out everywhere.", nextLabel: "Tug" },
     figure: { imagePrefix: "figure_b_", lastStep: 3, wholeSentence: "Maybe breaking it will make you feel better.", brokenSentence: "She is completely broken.", nextLabel: "Break" },
     leaf: { imagePrefix: "leaf_b_", lastStep: 4, wholeSentence: "The wait feels endless.", brokenSentence: "Only bare branches remain.", nextLabel: "Pluck" },
-    envelope: { imagePrefix: "envelope_b_", lastStep: 3, wholeSentence: "You used to enjoy waiting for a letter. But now?", brokenSentence: "You don't need it anymore.", nextLabel: "Tear" },
+    envelope: { imagePrefix: "envelope_b_", lastStep: 3, wholeSentence: "You used to enjoy waiting for a letter. But now?", brokenSentence: "You don’t need it anymore.", nextLabel: "Tear" },
     plate: { imagePrefix: "plate_b", lastStep: 4, wholeSentence: "You feel anxious. What if you dropped it?", brokenSentence: "It was such a beautiful plate...", nextLabel: "Drop" }
 };
 const singleEventProgress = new Map();
@@ -794,6 +794,12 @@ function randomEvent() {
         setupRestoreEvent(newEvent);
     } else if (newEvent.classList.contains("singleEvent")) {
         setupSingleEvent(newEvent);
+    }
+
+    if (newEvent.classList.contains("brokenWindow")) {
+        newEvent.querySelectorAll(".brokenWindowPane").forEach(function (pane) {
+            if (revealedWindowPanes.has(pane.dataset.pane)) revealBrokenWindowPane(pane);
+        });
     }
 
     if (newEvent.classList.contains("birdCloudTemplate")) {
@@ -1073,18 +1079,9 @@ function setupRestoreEvent(eventElement) {
         moveGroup(group, dx, dy);
     }
 
-    function placeCompletedImage(group) {
+    function fitCompletedBoard(group) {
         const bounds = groupBounds(group);
-        const imageWidth = bounds.right - bounds.left;
-        const imageHeight = bounds.bottom - bounds.top;
-
-        for (const piece of group) piece.image.style.transition = "none";
-        moveGroup(group, (board.clientWidth - imageWidth) / 2 - bounds.left, 12 - bounds.top);
-        board.style.height = `${imageHeight + 24}px`;
-        requestAnimationFrame(function () {
-            for (const piece of group) piece.image.style.removeProperty("transition");
-            eventElement.scrollIntoView({ block: "start", behavior: "smooth" });
-        });
+        board.style.height = `${bounds.bottom + 24}px`;
     }
 
     function layout() {
@@ -1147,7 +1144,7 @@ function setupRestoreEvent(eventElement) {
         });
 
         new Set(pieces.map(piece => piece.group)).forEach(keepGroupInside);
-        if (completedHere) placeCompletedImage(pieces[0].group);
+        if (completedHere) fitCompletedBoard(pieces[0].group);
         board.classList.add("ready");
     }
 
@@ -1189,7 +1186,7 @@ function setupRestoreEvent(eventElement) {
             caption.textContent = restoreCompleteText;
             board.after(caption);
             eventElement.classList.add("completed");
-            setTimeout(() => placeCompletedImage(group), 260);
+            setTimeout(() => fitCompletedBoard(group), 260);
             setTimeout(resumeAfterRestore, restoreMessageDelay);
         }
     }
@@ -1327,6 +1324,17 @@ document.querySelector(".eventArea").addEventListener("click", function (event) 
 });
 
 // brokenWindow 표시
+const revealedWindowPanes = new Set();
+
+function revealBrokenWindowPane(pane) {
+    const piece = document.createElement("img");
+    piece.src = `use_image/break/${pane.dataset.pane}.png`;
+    piece.alt = `Broken window pane ${pane.dataset.pane.replace("_", "-")}`;
+
+    pane.replaceChildren(piece);
+    pane.classList.add("revealed");
+}
+
 document.querySelector(".eventArea").addEventListener("click", function (event) {
     const pane = event.target.closest(".brokenWindowPane");
 
@@ -1334,12 +1342,8 @@ document.querySelector(".eventArea").addEventListener("click", function (event) 
         return;
     }
 
-    const piece = document.createElement("img");
-    piece.src = `use_image/break/${pane.dataset.pane}.png`;
-    piece.alt = `Broken window pane ${pane.dataset.pane.replace("_", "-")}`;
-
-    pane.replaceChildren(piece);
-    pane.classList.add("revealed");
+    revealedWindowPanes.add(pane.dataset.pane);
+    revealBrokenWindowPane(pane);
 });
 
 //캔버스 그리기

@@ -217,7 +217,7 @@
   </div>
   <div class="brokenWindowCaption">
     <p>You’re getting anxious. You throw a ball.</p>
-    <button type="button" class="windowButton" onclick="scrollAgain()">Leave</button>
+    <button type="button" class="windowButton" onclick="event.stopPropagation(); scrollAgain()">Leave</button>
   </div>
 </div>
 
