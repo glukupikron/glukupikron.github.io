@@ -141,6 +141,45 @@
 </div>
   </div>
 </div>
+
+<!--crow 구역-->
+<div class="eventTemplate crow" onclick="stopScroll()">
+  <div class="crowRow1">
+  </div>
+  <div class="crowRow2">
+    <span style="background-color: rgba(255, 255, 255, 0.5)">Would you like to wait for the crow to fly again?</span>
+    <div class="select-wrapper">
+      <select class="custom-select" onclick="event.stopPropagation()" onchange="selectCrow(this)">
+        <option value="" disabled selected>huh?</option>
+        <option>yes</option>
+        <option>no</option>
+      </select>
+      <div class="select-arrow">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="#6b7280" stroke="none"><polygon points="6,9 18,9 12,16"/></svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--moon 구역-->
+<div class="eventTemplate moon" onclick="stopScroll()">
+  <div class="moonRow1">
+  </div>
+  <div class="moonRow2">
+    <span style="background-color: rgba(255, 255, 255, 0.5)">Would you like to wait for the moon to show her face again?</span>
+    <div class="select-wrapper">
+      <select class="custom-select" onclick="event.stopPropagation()" onchange="selectMoon(this)">
+        <option value="" disabled selected>huh?</option>
+        <option>yes</option>
+        <option>no</option>
+      </select>
+      <div class="select-arrow">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="#6b7280" stroke="none"><polygon points="6,9 18,9 12,16"/></svg>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!--차 구역-->
 <div class ="eventTemplate carStreet" onclick = 'stopScroll()'>
   <div class="carRow1">
@@ -167,7 +206,7 @@
     
   </div>
   <div class="shrimpRow2">
-    <span style = "background-color: rgba(255, 255, 255, 0.5)">Would you like to wait for the shrimp to dance again?</span>
+    <span style = "background-color: rgba(255, 255, 255, 0.5)">Would you like to wait for little shrimps to dance again?</span>
     <div class="select-wrapper">
       <select class="custom-select" onclick="event.stopPropagation()" onchange = "selectShrimp(this)">
         <option value="" disabled selected>huh?</option>
@@ -266,6 +305,22 @@
 <div class="eventTemplate singleEvent" data-single="leaf"></div>
 <div class="eventTemplate singleEvent" data-single="envelope"></div>
 <div class="eventTemplate singleEvent" data-single="plate"></div>
+<div class="eventTemplate singleEvent dogEvent"></div>
+<div class="eventTemplate singleEvent scratchEvent"></div>
+
+<div class="eventTemplate maskEvent" onclick="stopScroll()">
+  <div class="maskEventImageRow">
+    <img class="maskEventImage" src="use_image/mask.png" alt="A strange mask">
+  </div>
+  <div class="maskEventInfoRow">
+    <p class="maskEventText"></p>
+    <div class="maskEventButtons">
+      <button type="button" class="windowButton" data-mask-action="talk">Talk to it</button>
+      <button type="button" class="windowButton" data-mask-action="wear">Put it on</button>
+      <button type="button" class="windowButton" data-mask-action="leave">Leave</button>
+    </div>
+  </div>
+</div>
 
 <div class="eventTemplate restoreEvent restoreDoll singleEvent" data-restore="doll">
   <p class="restoreText">Restore the doll?</p>
@@ -304,6 +359,8 @@
 
 <!--event area-->
 <div class = "eventArea"></div>
+
+    <div class="maskDarkness" aria-hidden="true"></div>
   
    
 

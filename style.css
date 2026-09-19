@@ -895,17 +895,17 @@ body {
 
 /*하나비 그리드*/
 
-.hanabi {
+.hanabi,
+.moon {
   
-  width: 100vw;
+  width: calc(100% + 80px);
   height: 500px;   
   margin-left: -40px;
-  margin-bottom: 200px;
+  margin-bottom: 300px;
   padding-bottom: 5px;
   display: grid;
   border: 1px solid;
   border-color: rgb(198, 204, 206);
-  background-image: url(use_image/firework_capture.png);
   background-repeat: repeat-x;
   background-size: contain;
   box-sizing: border-box;
@@ -922,14 +922,62 @@ body {
     "."; 
 }
 
-.hanabiRow2
+.hanabi {
+  background-image: url(use_image/firework_capture.png);
+}
+
+/* crow */
+
+.crow {
+  width: calc(100% + 80px);
+  height: 500px;
+  margin-left: -40px;
+  margin-bottom: 300px;
+  padding-bottom: 5px;
+  display: grid;
+  border: 1px solid;
+  border-color: rgb(198, 204, 206);
+  background-image: url(use_image/crow_capture.png);
+  background-repeat: repeat-x;
+  background-size: contain;
+  box-sizing: border-box;
+  place-items: center;
+  font-family: 'Courier New', Courier, monospace;
+  text-align: center;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1.8fr 0.2fr;
+  gap: 0;
+  grid-template-areas:
+    "."
+    ".";
+  filter: contrast(90%);
+}
+
+.moon {
+  background-image: url(use_image/moon_capture.png);
+}
+
+.hanabiRow2,
+.moonRow2
 {
     padding: 5px;
     line-height: 1.4;
 }
 
-.hanabi:hover {
+.crowRow2 {
+  padding: 5px;
+  line-height: 1.4;
+}
+
+.hanabi:hover,
+.moon:hover {
   box-shadow:0 0 0 1600px rgba(0,0,0,0.65);/* dark around it */
+  z-index: 10;
+  position: relative;
+}
+
+.crow:hover {
+  box-shadow: 0 0 0 1600px rgba(0,0,0,0.65);
   z-index: 10;
   position: relative;
 }
@@ -938,10 +986,10 @@ body {
 
 .carStreet {
   
-  width: 100vw;
+  width: calc(100% + 80px);
   height: 500px;   
   margin-left: -40px;
-  margin-bottom: 200px;
+  margin-bottom: 300px;
   padding-bottom: 5px;
   display: grid;
   border: 1px solid;
@@ -979,10 +1027,10 @@ body {
 
 .shrimp {
   
-  width: 100vw;
+  width: calc(100% + 80px);
   height: 500px;   
   margin-left: -40px;
-  margin-bottom: 200px;
+  margin-bottom: 300px;
   padding-bottom: 5px;
   display: grid;
   border: 1px solid;
@@ -994,6 +1042,9 @@ body {
   place-items: center; 
   font-family : 'Courier New', Courier, monospace;
   text-align: center;
+  filter: contrast(80%);
+
+  /*filter: contrast(55%) brightness(120%);*/
  
  
   grid-template-columns: 1fr; 
@@ -1353,6 +1404,112 @@ body {
     text-align: center;
 }
 
+.dogEvent {
+    width: 600px;
+    max-width: calc(100% - 100px);
+}
+
+.dogEvent .singleEventText.loading {
+    font-style: italic;
+}
+
+.scratchSurface {
+    position: relative;
+    overflow: hidden;
+    cursor: grab;
+    touch-action: manipulation;
+    user-select: none;
+}
+
+.scratchSurface:active {
+    cursor: grabbing;
+}
+
+.scratchSurface .singleEventImage {
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.scratchMark {
+    position: absolute;
+    width: 100px;
+    height: auto;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.maskEvent {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    width: 500px;
+    max-width: calc(100% - 300px);
+    margin: 0 0 200px;
+    margin-left: var(--event-x, 150px);
+    border: 2px dotted rgb(119, 100, 68);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 16px;
+
+}
+
+.maskEventImageRow,
+.maskEventInfoRow {
+    min-width: 0;
+}
+
+.maskEventImage {
+    display: block;
+    width: 500px;
+    max-width: 100%;
+    height: auto;
+}
+
+.maskEventInfoRow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 15px;
+    font-size: 14px;
+    line-height: 1.3;
+    text-align: center;
+}
+
+.maskEventText {
+    margin: 0 0 10px;
+    font-size: 16px;
+}
+
+.maskEventButtons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.maskDarkness {
+    --mask-darkness-duration: 12000ms;
+    --mask-darkness-opacity: 0.92;
+
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    pointer-events: none;
+    background: black;
+    opacity: 0;
+}
+
+.maskDarkness.playing {
+    animation: maskDarknessPulse var(--mask-darkness-duration) ease-in-out;
+}
+
+@keyframes maskDarknessPulse {
+    0%, 100% { opacity: 0; }
+    50% { opacity: var(--mask-darkness-opacity); }
+}
+
 .singleEventButtonRow {
     display: flex;
     justify-content: center;
@@ -1396,8 +1553,8 @@ body {
 
 .restoreEvent:not(.restoreDoll) {
     display: grid;
-    width: 100vw;
-    margin: 0 0 200px calc(50% - 50vw);
+    width: calc(100% + 80px);
+    margin: 0 0 200px -40px;
 }
 
 .restoreBoard {
@@ -1439,10 +1596,33 @@ body {
 /*모바일의 경우*/
 @media (max-width: 600px) {
     .singleEvent {
-        width: 100vw;
+        width: calc(100% + 20px);
         max-width: none;
-        margin-left: calc(50% - 50vw);
+        margin-left: -10px;
         padding: 0px;
+    }
+
+    .restoreEvent:not(.restoreDoll) {
+        width: calc(100% + 20px);
+        margin-left: -10px;
+    }
+
+    .dogEvent {
+        width: 90vw;
+        max-width: 90vw;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .scratchMark {
+        width: 55px;
+    }
+
+    .maskEvent {
+        width: 90vw;
+        max-width: 90vw;
+        margin-left: auto;
+        margin-right: 0;
     }
 
     body {
@@ -1450,7 +1630,14 @@ body {
         padding-right: 10px;
     }
 
-    .hanabi:hover {
+    .hanabi:hover,
+    .moon:hover {
+        box-shadow: none;
+        z-index: auto;
+        position: static;
+    }
+
+    .crow:hover {
         box-shadow: none;
         z-index: auto;
         position: static;
@@ -1586,26 +1773,38 @@ body {
         width: 150px;
     }
 
-    .hanabi {
+    .hanabi,
+    .moon {
+        width: calc(100% + 20px);
         margin-left: -10px;
         margin-top: 20px;
-        margin-bottom: 150px;
+        margin-bottom: 300px;
         background-repeat: repeat-y;
         height: 800px;
         
     }
-    .carStreet {
+    .crow {
+        width: calc(100% + 20px);
         margin-left: -10px;
         margin-top: 20px;
-        margin-bottom: 150px;
+        margin-bottom: 300px;
+        background-repeat: repeat-y;
+        height: 800px;
+    }
+    .carStreet {
+        width: calc(100% + 20px);
+        margin-left: -10px;
+        margin-top: 20px;
+        margin-bottom: 300px;
         background-repeat: repeat-y;
         height: 800px;
         
     }
     .shrimp {
+        width: calc(100% + 20px);
         margin-left: -10px;
         margin-top: 20px;
-        margin-bottom: 150px;
+        margin-bottom: 300px;
         background-repeat: repeat-y;
         height: 800px;
         

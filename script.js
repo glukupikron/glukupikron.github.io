@@ -1,5 +1,7 @@
 let runScroll;
 let restoreEventOpen = false;
+let autoScrollStep = 1;
+let scrollBoostTimer;
 
 function checkBottom () { 
     const reachedBottom = window.scrollY + window.innerHeight >=
@@ -8,7 +10,7 @@ function checkBottom () {
     if (reachedBottom) { randomEvent(); }
 }
 function autoScroll(){
-  window.scrollBy(0,1);
+  window.scrollBy(0, autoScrollStep);
   checkBottom();
 }
 
@@ -20,6 +22,14 @@ function stopScroll(){
 function scrollAgain(){
    clearInterval(runScroll);
     runScroll = setInterval(autoScroll, 20);
+}
+
+function boostScroll() {
+    clearTimeout(scrollBoostTimer);
+    autoScrollStep = 5;
+    scrollBoostTimer = setTimeout(function () {
+        autoScrollStep = 1;
+    }, 8000);
 }
 
 window.addEventListener("scroll", checkBottom);
@@ -100,7 +110,7 @@ For a moment, silence settles over the air around them.`
     },
     {
         italicIntro: `You crane your neck forward to steal a look at the scene, just as the woman had hidden behind a tree the night before.
-A black mask rests in the woman’s palm.`,
+A weird-looking mask rests in the woman’s palm.`,
         text: `“What do you think I should do with it?”`
     }
 ];
@@ -114,6 +124,7 @@ const maskPopups = maskScenes.map(function (scene, index) {
         yesLabel: "Continue",
         noLabel: "Leave",
         hideContinue: index === maskScenes.length - 1,
+        completesConversation: index === maskScenes.length - 1,
         yesNext: index < maskScenes.length - 1 ? `mask${index + 2}` : null,
         noNext: null
     };
@@ -441,7 +452,14 @@ and a lukewarm whirlwind, smoldering gray, blows through.
 ]
 
 const closedConversations = new Set();
+const completedConversations = new Set();
 const completedDrawings = [];
+
+function rememberConversationCompletion(popupData) {
+    if (popupData?.completesConversation) {
+        completedConversations.add(popupData.conversationId);
+    }
+}
 
 function getActiveConversationIds() {
     const activePopups = popupArea.querySelectorAll( ".randomPopup");
@@ -608,6 +626,7 @@ function choosePopup(button) {
         nextPopupId = currentPopup.noNext;
     }
 
+    rememberConversationCompletion(currentPopup);
     popup.remove();
 
     if (nextPopupId) {
@@ -623,7 +642,9 @@ function closePopup(button) {
     const popup = button.closest(".randomPopup");
 
     const conversationId = popup.dataset.conversationId;
+    const currentPopup = findPopupData(popup.dataset.popupId);
 
+    rememberConversationCompletion(currentPopup);
     closedConversations.add(
         conversationId
     );
@@ -709,6 +730,22 @@ const singleEventScenes = {
 };
 const singleEventProgress = new Map();
 let preloadedSingleImage = null;
+let maskEventWasLeft = false;
+let maskEventResolved = false;
+let maskEventOpen = false;
+const scratchState = {
+    marks: [],
+    open: false
+};
+const scratchLimit = 5;
+let handHitMap = null;
+
+const maskEventText = {
+    first: "You’ve picked up a strange mask.",
+    returning: "For some reason, the strange mask seems to keep following you.",
+    darkening: "Your vision is slowly growing dark.",
+    refreshed: "You feel a little more refreshed."
+};
 
 // Each offset is the part's original top-left corner inside its _whole image.
 const restoreScenes = {
@@ -742,10 +779,22 @@ function randomEvent() {
             if (source === birdCloudSource) {
                 return false;
             }
+            if (source.classList.contains("maskEvent")) {
+                return completedConversations.has("mask")
+                    && !maskEventResolved
+                    && !maskEventOpen;
+            }
+            if (source.classList.contains("scratchEvent")) {
+                return scratchState.marks.length < scratchLimit
+                    && !scratchState.open;
+            }
             if (source.classList.contains("restoreEvent")) {
                 const type = source.dataset.restore;
                 return (singleEventProgress.get(type) ?? 0) >= singleEventScenes[type].lastStep
                     && !restoredSingles.has(type);
+            }
+            if (source.classList.contains("dogEvent")) {
+                return true;
             }
             if (source.classList.contains("singleEvent")) {
                 const type = source.dataset.single;
@@ -790,8 +839,14 @@ function randomEvent() {
     const eventArea = document.querySelector(".eventArea");
     eventArea.appendChild(newEvent);
 
-    if (newEvent.classList.contains("restoreEvent")) {
+    if (newEvent.classList.contains("maskEvent")) {
+        setupMaskEvent(newEvent);
+    } else if (newEvent.classList.contains("scratchEvent")) {
+        setupScratchEvent(newEvent);
+    } else if (newEvent.classList.contains("restoreEvent")) {
         setupRestoreEvent(newEvent);
+    } else if (newEvent.classList.contains("dogEvent")) {
+        setupDogEvent(newEvent);
     } else if (newEvent.classList.contains("singleEvent")) {
         setupSingleEvent(newEvent);
     }
@@ -936,12 +991,16 @@ function setupSingleEvent(eventElement) {
     eventElement.querySelector(".singleEventNext").textContent = scene.nextLabel;
     showSingleEventStep(eventElement, step);
 
-    placeSingleEvent(eventElement);
+    placeEvent(eventElement);
 }
 
-function placeSingleEvent(eventElement) {
-    const freeSpace = Math.max(0, eventElement.parentElement.clientWidth - eventElement.offsetWidth);
-    eventElement.style.setProperty("--single-x", `${Math.random() * freeSpace}px`);
+function placeEvent(eventElement, sideMargin = 0, property = "--single-x") {
+    const maxX = Math.max(
+        sideMargin,
+        eventElement.parentElement.clientWidth - eventElement.offsetWidth - sideMargin
+    );
+    const x = sideMargin + Math.random() * (maxX - sideMargin);
+    eventElement.style.setProperty(property, `${x}px`);
 }
 
 function showSingleEventStep(eventElement, step) {
@@ -965,7 +1024,10 @@ function showSingleEventStep(eventElement, step) {
 
 document.querySelector(".eventArea").addEventListener("click", function (event) {
     const singleEvent = event.target.closest(".singleEvent");
-    if (!singleEvent || singleEvent.classList.contains("restoreEvent")) return;
+    if (!singleEvent
+        || singleEvent.classList.contains("restoreEvent")
+        || singleEvent.classList.contains("dogEvent")
+        || singleEvent.classList.contains("scratchEvent")) return;
 
     if (event.target.closest(".singleEventLeave")) {
         preloadedSingleImage = null;
@@ -990,11 +1052,220 @@ document.querySelector(".eventArea").addEventListener("click", function (event) 
     showSingleEventStep(singleEvent, step);
 });
 
+function setupDogEvent(eventElement) {
+    eventElement.appendChild(
+        document.querySelector("#singleEventLayout").content.cloneNode(true)
+    );
+
+    eventElement.querySelector(".singleEventImage").src = "use_image/single/dog_whole_1.png";
+    eventElement.querySelector(".singleEventText").textContent = "A sacred dog is staring at you.";
+    eventElement.querySelector(".singleEventNext").textContent = "Approach";
+
+    if (window.matchMedia("(max-width: 600px)").matches) {
+        eventElement.style.removeProperty("--single-x");
+    } else {
+        placeEvent(eventElement, 50);
+    }
+}
+
+document.querySelector(".eventArea").addEventListener("click", function (event) {
+    const dogEvent = event.target.closest(".dogEvent");
+    if (!dogEvent) return;
+
+    if (event.target.closest(".singleEventLeave")) {
+        scrollAgain();
+        return;
+    }
+
+    const approachButton = event.target.closest(".singleEventNext");
+    if (!approachButton || dogEvent.classList.contains("loading")) return;
+
+    stopScroll();
+    dogEvent.classList.add("loading");
+
+    const image = dogEvent.querySelector(".singleEventImage");
+    const text = dogEvent.querySelector(".singleEventText");
+    const leaveButton = dogEvent.querySelector(".singleEventLeave");
+    const outcome = Math.random() < 0.5 ? 2 : 3;
+    const outcomeImage = new Image();
+
+    outcomeImage.src = `use_image/single/dog_whole_${outcome}.png`;
+    text.textContent = "Loading...";
+    text.classList.add("loading");
+    approachButton.hidden = true;
+    leaveButton.hidden = true;
+
+    setTimeout(function () {
+        image.src = outcomeImage.src;
+        text.textContent = outcome === 2
+            ? "She is calmer than you expected. You may leave."
+            : "She looks upset. You’d better leave.";
+        text.classList.remove("loading");
+        leaveButton.hidden = false;
+        dogEvent.classList.remove("loading");
+    }, 3000);
+});
+
+function prepareHandHitMap(image) {
+    if (handHitMap || !image.naturalWidth) return;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = 625;
+    canvas.height = Math.round(canvas.width * image.naturalHeight / image.naturalWidth);
+
+    const context = canvas.getContext("2d", { willReadFrequently: true });
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    handHitMap = { context, width: canvas.width, height: canvas.height };
+}
+
+function addScratchMark(eventElement, mark) {
+    const scratch = document.createElement("img");
+    scratch.className = "scratchMark";
+    scratch.src = "use_image/single/hand_kizu_whole.png";
+    scratch.alt = "";
+    scratch.style.left = `${mark.x * 100}%`;
+    scratch.style.top = `${mark.y * 100}%`;
+    eventElement.querySelector(".singleEventImageRow").appendChild(scratch);
+}
+
+function setupScratchEvent(eventElement) {
+    scratchState.open = true;
+    stopScroll();
+
+    eventElement.appendChild(
+        document.querySelector("#singleEventLayout").content.cloneNode(true)
+    );
+
+    const image = eventElement.querySelector(".singleEventImage");
+    const text = eventElement.querySelector(".singleEventText");
+
+    eventElement.querySelector(".singleEventImageRow").classList.add("scratchSurface");
+    eventElement.querySelector(".singleEventNext").hidden = true;
+    image.src = "use_image/single/hand_whole.png";
+    image.alt = "A hand that feels itchy";
+    text.textContent = scratchState.marks.length >= scratchLimit
+        ? "That’s enough."
+        : "You feel anxious. You feel an itch.";
+
+    scratchState.marks.forEach(function (mark) {
+        addScratchMark(eventElement, mark);
+    });
+
+    if (image.complete) prepareHandHitMap(image);
+    image.addEventListener("load", function () {
+        prepareHandHitMap(image);
+    }, { once: true });
+
+    placeEvent(eventElement);
+}
+
+document.querySelector(".eventArea").addEventListener("click", function (event) {
+    const scratchEvent = event.target.closest(".scratchEvent");
+    if (!scratchEvent) return;
+
+    if (event.target.closest(".singleEventLeave")) {
+        scratchState.open = false;
+        scrollAgain();
+        return;
+    }
+
+    const surface = event.target.closest(".scratchSurface");
+    if (!surface || scratchState.marks.length >= scratchLimit || !handHitMap) return;
+
+    const image = scratchEvent.querySelector(".singleEventImage");
+    const rect = image.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width;
+    const y = (event.clientY - rect.top) / rect.height;
+
+    if (x < 0 || x > 1 || y < 0 || y > 1) return;
+
+    const pixelX = Math.min(handHitMap.width - 1, Math.floor(x * handHitMap.width));
+    const pixelY = Math.min(handHitMap.height - 1, Math.floor(y * handHitMap.height));
+    const alpha = handHitMap.context.getImageData(pixelX, pixelY, 1, 1).data[3];
+
+    if (alpha < 20) return;
+
+    const mark = { x, y };
+    scratchState.marks.push(mark);
+    addScratchMark(scratchEvent, mark);
+
+    if (scratchState.marks.length === scratchLimit) {
+        scratchEvent.querySelector(".singleEventText").textContent = "That’s enough.";
+        scratchEvent.classList.add("completed");
+    }
+});
+
+function setupMaskEvent(eventElement) {
+    maskEventOpen = true;
+    eventElement.querySelector(".maskEventText").textContent = maskEventWasLeft
+        ? maskEventText.returning
+        : maskEventText.first;
+
+    if (window.matchMedia("(max-width: 600px)").matches) {
+        eventElement.style.removeProperty("--event-x");
+    } else {
+        placeEvent(eventElement, 150, "--event-x");
+    }
+}
+
+function playMaskDarkness(eventElement) {
+    const darkness = document.querySelector(".maskDarkness");
+    const text = eventElement.querySelector(".maskEventText");
+
+    darkness.classList.remove("playing");
+    void darkness.offsetWidth;
+    darkness.addEventListener("animationend", function () {
+        darkness.classList.remove("playing");
+        text.textContent = maskEventText.refreshed;
+    }, { once: true });
+    darkness.classList.add("playing");
+}
+
+document.querySelector(".eventArea").addEventListener("click", function (event) {
+    const maskEvent = event.target.closest(".maskEvent");
+    const actionButton = event.target.closest("[data-mask-action]");
+    if (!maskEvent || !actionButton) return;
+
+    const action = actionButton.dataset.maskAction;
+
+    if (action === "leave") {
+        if (!maskEvent.dataset.choice) {
+            maskEventWasLeft = true;
+        } else if (maskEvent.dataset.choice === "wear") {
+            boostScroll();
+        }
+        maskEventOpen = false;
+        scrollAgain();
+        return;
+    }
+
+    stopScroll();
+    maskEventResolved = true;
+    maskEvent.dataset.choice = action;
+    maskEvent.querySelector('[data-mask-action="talk"]').hidden = true;
+    maskEvent.querySelector('[data-mask-action="wear"]').hidden = true;
+
+    const text = maskEvent.querySelector(".maskEventText");
+
+    if (action === "talk") {
+        text.textContent = maskEventText.darkening;
+        playMaskDarkness(maskEvent);
+        return;
+    }
+
+    const strong = document.createElement("strong");
+    strong.textContent = "Strength surges through your body!";
+    text.replaceChildren(
+        strong,
+        document.createElement("br"),
+        document.createTextNode("Want to see what it can do?")
+    );
+});
+
 function setupRestoreEvent(eventElement) {
     const type = eventElement.dataset.restore;
     restoreEventOpen = true;
     stopScroll();
-    requestAnimationFrame(() => eventElement.scrollIntoView({ block: "start", behavior: "smooth" }));
 
     if (type === "doll") {
         eventElement.appendChild(
@@ -1007,7 +1278,7 @@ function setupRestoreEvent(eventElement) {
         eventElement.querySelector(".singleEventNext").classList.add("restoreDollButton");
         eventElement.querySelector(".singleEventLeave").classList.add("restoreLeave");
         showDollRestoreStep(eventElement);
-        placeSingleEvent(eventElement);
+        placeEvent(eventElement);
         return;
     }
 
@@ -1204,7 +1475,6 @@ function setupRestoreEvent(eventElement) {
         let dragOffsetY = 0;
         let pointerX = 0;
         let pointerY = 0;
-        let scrollFrame = null;
 
         function moveDraggedGroup() {
             const boardRect = board.getBoundingClientRect();
@@ -1219,18 +1489,6 @@ function setupRestoreEvent(eventElement) {
                 pointerY - boardRect.top - dragOffsetY - pieceY
             ));
             moveGroup(piece.group, dx, dy);
-        }
-
-        function scrollWhileDragging() {
-            const edge = 70;
-            const direction = pointerY < edge ? -1 : pointerY > window.innerHeight - edge ? 1 : 0;
-            if (direction) {
-                window.scrollBy(0, direction * 10);
-                moveDraggedGroup();
-            }
-            if (board.clientHeight > window.innerHeight) {
-                scrollFrame = requestAnimationFrame(scrollWhileDragging);
-            }
         }
 
         image.addEventListener("pointerdown", function (event) {
@@ -1249,7 +1507,6 @@ function setupRestoreEvent(eventElement) {
             }
             image.style.zIndex = ++topLayer;
             image.setPointerCapture(event.pointerId);
-            scrollFrame = requestAnimationFrame(scrollWhileDragging);
         });
 
         image.addEventListener("pointermove", function (event) {
@@ -1265,7 +1522,6 @@ function setupRestoreEvent(eventElement) {
             pointerY = event.clientY;
             moveDraggedGroup();
             image.releasePointerCapture(event.pointerId);
-            cancelAnimationFrame(scrollFrame);
             for (const member of piece.group) {
                 member.image.classList.remove("dragging");
             }
@@ -1274,13 +1530,11 @@ function setupRestoreEvent(eventElement) {
         });
 
         image.addEventListener("pointercancel", function () {
-            cancelAnimationFrame(scrollFrame);
             for (const member of piece.group) member.image.classList.remove("dragging");
             saveProgress();
         });
 
         image.addEventListener("lostpointercapture", function () {
-            cancelAnimationFrame(scrollFrame);
             for (const member of piece.group) member.image.classList.remove("dragging");
         });
     });
@@ -2001,22 +2255,38 @@ const smokingImages = [
     
 ];
 
-// hanabi
+function selectAnimatedBackground(select, selector, gifSource) {
+    const eventElement = select.closest(selector);
 
-function selectHanabi(select) {
-    const hanabi = select.closest(".hanabi");
     if (select.value === "yes") {
         setTimeout(function() {
-            hanabi.style.backgroundImage = 'url("use_image/firework_umzzal.gif")';
+            eventElement.style.backgroundImage = `url("${gifSource}")`;
         },3000);
 
         setTimeout(function () { createDebris(15);}, 10000);
-        
     }
 
     if (select.value === "no") {
         scrollAgain();
     }
+}
+
+// hanabi
+
+function selectHanabi(select) {
+    selectAnimatedBackground(select, ".hanabi", "use_image/firework_umzzal.gif");
+}
+
+// crow
+
+function selectCrow(select) {
+    selectAnimatedBackground(select, ".crow", "use_image/crow_umzzal.gif");
+}
+
+// moon
+
+function selectMoon(select) {
+    selectAnimatedBackground(select, ".moon", "use_image/moon_umzzal.gif");
 }
 
 //carStreet
