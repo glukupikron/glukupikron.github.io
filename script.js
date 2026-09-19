@@ -2967,7 +2967,7 @@ const owariModal = document.querySelector(".owariModal");
 const owariPrompt = owariModal.querySelector(".owariPrompt");
 const takeawayResult = owariModal.querySelector(".takeawayResult");
 const takeawayStatus = owariModal.querySelector(".takeawayStatus");
-const takeawayProgress = owariModal.querySelector(".takeawayProgress");
+const takeawayPercent = owariModal.querySelector(".takeawayPercent");
 const takeawayQr = owariModal.querySelector(".takeawayQr");
 const takeawayExpiry = owariModal.querySelector(".takeawayExpiry");
 const takeawayOpen = owariModal.querySelector(".takeawayOpen");
@@ -3002,8 +3002,8 @@ function showTakeawayResult() {
 
 function resetTakeawayResult() {
     takeawayStatus.textContent = "Preparing your takeaway…";
-    takeawayProgress.hidden = false;
-    takeawayProgress.value = 0;
+    takeawayPercent.hidden = false;
+    takeawayPercent.textContent = "0%";
     takeawayQr.hidden = true;
     takeawayExpiry.hidden = true;
     takeawayOpen.hidden = true;
@@ -3234,7 +3234,8 @@ async function finishJourney() {
 
             await uploadJourneyChunk(journey.id, index, blob);
 
-            takeawayProgress.value = (index + 1) / chunkCount;
+            takeawayPercent.textContent =
+                `${Math.round(((index + 1) / chunkCount) * 100)}%`;
             takeawayStatus.textContent = `Saving fragment ${index + 1} of ${chunkCount}…`;
         }
 
@@ -3244,7 +3245,7 @@ async function finishJourney() {
 
         takeawayState.status = "ready";
         takeawayStatus.textContent = "Your record of waiting is ready.";
-        takeawayProgress.hidden = true;
+        takeawayPercent.hidden = true;
         takeawayExpiry.hidden = false;
         takeawayOpen.hidden = false;
         takeawayCopy.hidden = false;
@@ -3253,7 +3254,7 @@ async function finishJourney() {
         console.error(error);
         takeawayState.status = "failed";
         takeawayStatus.textContent = "Something interrupted the process. Your journey is still here.";
-        takeawayProgress.hidden = true;
+        takeawayPercent.hidden = true;
         takeawayRetry.hidden = false;
         takeawayClose.hidden = false;
     }
