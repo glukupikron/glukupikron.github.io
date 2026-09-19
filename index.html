@@ -46,6 +46,11 @@
   <button class = puffButton onclick = "event.stopPropagation(); smoking(this); scrollAgain();">Puff!</button>
  </div>
 
+<!-- 아이스크림이 녹는 동안 화면에 고정되는 구역 -->
+<div class="iceCreamDisplay" data-capture-ignore aria-hidden="true">
+  <img alt="">
+</div>
+
 
 <!--테스트 구역-->
 
@@ -338,6 +343,32 @@
       <button type="button" class="windowButton" data-mask-action="wear">Put it on</button>
       <button type="button" class="windowButton" data-mask-action="leave">Leave</button>
     </div>
+  </div>
+</div>
+
+<div class="eventTemplate theaterBookEvent" onclick="stopScroll()">
+  <div class="theaterBookImageRow">
+    <img class="theaterBookImage" src="use_image/books.png" alt="A book left behind by two actors">
+  </div>
+  <div class="theaterBookInfoRow">
+    <p class="theaterBookIntro">
+      You picked up a book left behind by the two actors. Loose pages are sticking out of it.
+    </p>
+    <div class="theaterBookButtons">
+      <button type="button" class="windowButton" data-theater-book-page="top">Pull out the top page</button>
+      <button type="button" class="windowButton" data-theater-book-page="middle">Pull out the middle page</button>
+      <button type="button" class="windowButton" data-theater-book-page="bottom">Pull out the bottom page</button>
+      <button type="button" class="windowButton" data-theater-book-action="leave">Leave</button>
+    </div>
+  </div>
+</div>
+
+<div class="eventTemplate theaterPaperEvent" onclick="stopScroll()">
+  <div class="theaterBookPaperRow">
+    <p class="theaterBookPaperText"></p>
+  </div>
+  <div class="theaterBookInfoRow">
+    <button type="button" class="windowButton" data-theater-paper-action="leave">Leave</button>
   </div>
 </div>
 

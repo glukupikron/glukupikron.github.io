@@ -354,6 +354,7 @@ const theaterPopups = theaterScenes.map(function (scene, index) {
         yesLabel: "Continue",
         noLabel: "Leave",
         hideContinue: index === theaterScenes.length - 1,
+        completesConversation: index === theaterScenes.length - 1,
         yesNext: index < theaterScenes.length - 1 ? `theater${index + 2}` : null,
         noNext: null
     };
@@ -706,10 +707,10 @@ function startPopupTimer(){
     function showNextPopup() {
         showRandomPopup();
         popupTimer =
-            setTimeout(showNextPopup, randomNumber(30000, 60000));
+            setTimeout(showNextPopup, randomNumber(40000, 70000));
     }
     popupTimer =
-            setTimeout(showNextPopup, randomNumber(30000, 60000));
+            setTimeout(showNextPopup, randomNumber(40000, 70000));
 
 }
 // 이벤트
@@ -719,6 +720,7 @@ const eventSources = document.querySelectorAll(
 )
 
 const birdCloudSource = document.querySelector("#eventSources .birdCloudTemplate");
+const theaterPaperSource = document.querySelector("#eventSources .theaterPaperEvent");
 
 let regularEventCount = 0;
 let previousEventSource = null;
@@ -779,6 +781,11 @@ let preloadedSingleImage = null;
 let maskEventWasLeft = false;
 let maskEventResolved = false;
 let maskEventOpen = false;
+const theaterBookPagesRead = new Set();
+let theaterBookOpen = false;
+let theaterBookPendingPage = null;
+let theaterPaperEventsUntilReveal = 0;
+let theaterPaperOpen = false;
 const scratchState = {
     marks: [],
     open: false
@@ -791,6 +798,55 @@ const maskEventText = {
     returning: "For some reason, the strange mask seems to keep following you.",
     darkening: "Your vision is slowly growing dark.",
     refreshed: "You feel a little more refreshed."
+};
+
+const theaterBookPageText = {
+    top: `From the age of six or seven until she was fourteen or fifteen, she did nothing but weep on the stage. And in those days the audience, too, would readily weep along with her.
+
+The belief that whenever she cried the audience was bound to cry as well was the first lens through which she saw life. Every human face looked to her like a face certain to weep at the sight of her performance. There was not a single face she found difficult to understand. And so, to her, the world wore a face exceedingly easy to read.`,
+    middle: `ROXANE (To Cyrano, holding back Christian, whom Cyrano is drawing away):
+Oh!—I trust him to you! Promise me that no risks shall put his life in danger!
+
+CYRANO:
+I will try my best, but promise…
+That I cannot!
+
+ROXANE:
+But swear he shall be prudent?
+
+CYRANO:
+Again, I’ll do my best, but…
+
+ROXANE:
+In the siege
+Let him not suffer!
+
+CYRANO:
+All that man can do,
+I…
+
+ROXANE:
+That he shall be faithful!
+
+CYRANO:
+Doubtless, but…
+
+ROXANE:
+That he will write oft?
+
+CYRANO (pausing):
+That, I promise you!
+
+Curtain.`,
+    bottom: `As a writer he knows their story must end and wants it to end. So, too, as readers we know the novel must end and want it to end.
+
+“But not yet!” say the readers to the writer.
+
+“But not yet!” says the writer to his hero and heroine.
+
+“But not yet!” says the beloved to the lover.
+
+And so the reach of desire continues. What is a paradox?`
 };
 
 // Each offset is the part's original top-left corner inside its _whole image.
@@ -826,10 +882,20 @@ function randomEvent() {
             if (source === birdCloudSource) {
                 return false;
             }
+            if (source === theaterPaperSource) {
+                return false;
+            }
             if (source.classList.contains("maskEvent")) {
                 return completedConversations.has("mask")
                     && !maskEventResolved
                     && !maskEventOpen;
+            }
+            if (source.classList.contains("theaterBookEvent")) {
+                return completedConversations.has("theater")
+                    && theaterBookPagesRead.size < 3
+                    && !theaterBookOpen
+                    && !theaterBookPendingPage
+                    && !theaterPaperOpen;
             }
             if (source.classList.contains("scratchEvent")) {
                 return scratchState.marks.length < scratchLimit
@@ -871,13 +937,19 @@ function randomEvent() {
     
     let selectedSource;
 
-    if (regularEventCount === 2) {
+    if (theaterBookPendingPage && theaterPaperEventsUntilReveal === 0) {
+        selectedSource = theaterPaperSource;
+    } else if (regularEventCount === 2) {
         selectedSource = birdCloudSource;
         regularEventCount = 0;
     } else {
         selectedSource = pickRandom(eventCandidates);
         regularEventCount++;
         previousEventSource = selectedSource;
+    }
+
+    if (theaterBookPendingPage && selectedSource !== theaterPaperSource) {
+        theaterPaperEventsUntilReveal--;
     }
 
 
@@ -888,6 +960,10 @@ function randomEvent() {
 
     if (newEvent.classList.contains("maskEvent")) {
         setupMaskEvent(newEvent);
+    } else if (newEvent.classList.contains("theaterBookEvent")) {
+        setupTheaterBookEvent(newEvent);
+    } else if (newEvent.classList.contains("theaterPaperEvent")) {
+        setupTheaterPaperEvent(newEvent);
     } else if (newEvent.classList.contains("scratchEvent")) {
         setupScratchEvent(newEvent);
     } else if (newEvent.classList.contains("restoreEvent")) {
@@ -1255,6 +1331,39 @@ function setupMaskEvent(eventElement) {
     }
 }
 
+function setupTheaterBookEvent(eventElement) {
+    theaterBookOpen = true;
+
+    eventElement.querySelectorAll("[data-theater-book-page]").forEach(function (button) {
+        button.hidden = theaterBookPagesRead.has(button.dataset.theaterBookPage);
+    });
+
+    if (window.matchMedia("(max-width: 600px)").matches) {
+        eventElement.style.removeProperty("--event-x");
+    } else {
+        placeEvent(eventElement, 150, "--event-x");
+    }
+}
+
+function setupTheaterPaperEvent(eventElement) {
+    const page = theaterBookPendingPage;
+    if (!page) {
+        eventElement.remove();
+        return;
+    }
+
+    theaterPaperOpen = true;
+    theaterBookPendingPage = null;
+    eventElement.dataset.theaterBookPage = page;
+    eventElement.querySelector(".theaterBookPaperText").textContent = theaterBookPageText[page];
+
+    if (window.matchMedia("(max-width: 600px)").matches) {
+        eventElement.style.removeProperty("--event-x");
+    } else {
+        placeEvent(eventElement, 150, "--event-x");
+    }
+}
+
 function playMaskDarkness(eventElement) {
     const darkness = document.querySelector(".maskDarkness");
     const text = eventElement.querySelector(".maskEventText");
@@ -1307,6 +1416,40 @@ document.querySelector(".eventArea").addEventListener("click", function (event) 
         document.createElement("br"),
         document.createTextNode("Want to see what it can do?")
     );
+});
+
+document.querySelector(".eventArea").addEventListener("click", function (event) {
+    const bookEvent = event.target.closest(".theaterBookEvent");
+    const pageButton = event.target.closest("[data-theater-book-page]");
+    const leaveButton = event.target.closest("[data-theater-book-action='leave']");
+    if (!bookEvent || (!pageButton && !leaveButton)) return;
+
+    if (leaveButton) {
+        theaterBookOpen = false;
+        scrollAgain();
+        return;
+    }
+
+    stopScroll();
+
+    const page = pageButton.dataset.theaterBookPage;
+    theaterBookPendingPage = page;
+    theaterPaperEventsUntilReveal = 1;
+    bookEvent.querySelector(".theaterBookIntro").textContent =
+        "The page was swept away by the wind and fell to the ground. You decide to wait for it to tumble toward you.";
+    bookEvent.querySelectorAll("[data-theater-book-page]").forEach(function (button) {
+        button.hidden = true;
+    });
+});
+
+document.querySelector(".eventArea").addEventListener("click", function (event) {
+    const paperEvent = event.target.closest(".theaterPaperEvent");
+    const leaveButton = event.target.closest("[data-theater-paper-action='leave']");
+    if (!paperEvent || !leaveButton) return;
+
+    theaterBookPagesRead.add(paperEvent.dataset.theaterBookPage);
+    theaterPaperOpen = false;
+    scrollAgain();
 });
 
 function setupRestoreEvent(eventElement) {
@@ -2212,14 +2355,82 @@ setTimeout(function() {
 let tabakoNum = 0;
 let flavors = ["matcha", "strawberry", "rice"];
 let whichFlavor = null;
+let iceCreamTimer;
+let iceCreamSequence = 0;
+
+const iceCreamDisplay = document.querySelector(".iceCreamDisplay");
+const iceCreamImage = iceCreamDisplay.querySelector("img");
+const iceCreamFlavorCodes = {
+    matcha: "m",
+    strawberry: "s",
+    rice: "r"
+};
 
 /* 사료 선택 시 */
 function nekoButton1(button){
     whichFlavor = flavors[Math.floor(Math.random() * flavors.length)];
+    startIceCream(whichFlavor);
+
     const nekoRow = button.closest(".nekoRow2");
     nekoRow.textContent = `The Sacred Cat gave you a sacred ice cream. which is a ${whichFlavor} flavor`;
     setTimeout(scrollAgain, 0);
-    }
+}
+
+function startIceCream(flavor) {
+    const flavorCode = iceCreamFlavorCodes[flavor];
+    if (!flavorCode) return;
+
+    clearInterval(iceCreamTimer);
+    const sequenceId = ++iceCreamSequence;
+    const images = [
+        `use_image/ice/ice_${flavorCode}_whole.png`,
+        ...Array.from({ length: 4 }, function (_, index) {
+            return `use_image/ice/ice_${flavorCode}_m_${index + 1}.png`;
+        })
+    ];
+    let currentImage = 0;
+
+    iceCreamImage.src = images[currentImage];
+    iceCreamDisplay.classList.add("isVisible");
+
+    iceCreamTimer = setInterval(function () {
+        if (takeawayState.status !== "playing") {
+            clearInterval(iceCreamTimer);
+            iceCreamTimer = undefined;
+            return;
+        }
+
+        currentImage++;
+        iceCreamImage.src = images[currentImage];
+
+        if (currentImage !== images.length - 1) return;
+
+        clearInterval(iceCreamTimer);
+        iceCreamTimer = undefined;
+
+        const leaveFinalImage = function () {
+            if (sequenceId !== iceCreamSequence) return;
+
+            const position = iceCreamImage.getBoundingClientRect();
+            const trace = document.createElement("img");
+
+            trace.src = images[currentImage];
+            trace.className = "iceCreamTrace";
+            trace.alt = "";
+            trace.style.left = `${position.left + window.scrollX}px`;
+            trace.style.top = `${position.top + window.scrollY}px`;
+
+            document.body.appendChild(trace);
+            iceCreamDisplay.classList.remove("isVisible");
+        };
+
+        if (iceCreamImage.complete) {
+            leaveFinalImage();
+        } else {
+            iceCreamImage.addEventListener("load", leaveFinalImage, { once: true });
+        }
+    }, 2000);
+}
 
 
 

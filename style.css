@@ -719,6 +719,34 @@ body {
     height: auto;
 }
 
+.iceCreamDisplay {
+    position: fixed;
+    top: 0;
+    left: 200px;
+    z-index: 2;
+    display: none;
+    width: 400px;
+    pointer-events: none;
+}
+
+.iceCreamDisplay.isVisible {
+    display: block;
+}
+
+.iceCreamDisplay img,
+.iceCreamTrace {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.iceCreamTrace {
+    position: absolute;
+    z-index: 2;
+    width: 400px;
+    pointer-events: none;
+}
+
 .ashTrace {
     position: absolute;
     width: 200px;
@@ -1571,6 +1599,82 @@ body {
     width: 100%;
 }
 
+.theaterBookEvent,
+.theaterPaperEvent {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    padding: 10px;
+    width: 524px;
+    max-width: calc(100% - 300px);
+    margin: 0 0 200px;
+    margin-left: var(--event-x, 150px);
+    border: 2px dotted rgb(119, 100, 68);
+    font-family: "Courier New", Courier, monospace;
+    font-size: 14px;
+}
+
+.theaterBookImageRow,
+.theaterBookInfoRow {
+    min-width: 0;
+}
+
+.theaterBookImageRow {
+    padding: 0;
+}
+
+.theaterBookImage {
+    display: block;
+    width: 500px;
+    max-width: 100%;
+    height: auto;
+}
+
+.theaterBookPaperRow {
+    display: grid;
+    width: 500px;
+    max-width: 100%;
+    min-width: 0;
+    aspect-ratio: 3 / 4;
+    box-sizing: border-box;
+    padding: 55px 48px;
+    margin: 0 auto;
+    background: url("use_image/oldpaper.png") center / 100% 100% no-repeat;
+}
+
+.theaterBookPaperRow[hidden] {
+    display: none;
+}
+
+.theaterBookPaperText {
+    margin: 0;
+    color: rgb(75, 55, 47);
+    font-size: 14px;
+    line-height: 1.3;
+    white-space: pre-line;
+}
+
+.theaterBookInfoRow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 15px;
+    line-height: 1.3;
+    text-align: center;
+}
+
+.theaterBookIntro {
+    margin: 0 0 10px;
+}
+
+.theaterBookButtons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+}
+
 .maskDarkness {
     --mask-darkness-duration: 12000ms;
     --mask-darkness-opacity: 0.92;
@@ -1705,6 +1809,18 @@ body {
         max-width: 90vw;
         margin-left: auto;
         margin-right: 0;
+    }
+
+    .theaterBookEvent,
+    .theaterPaperEvent {
+        width: 90vw;
+        max-width: 90vw;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .theaterBookPaperRow {
+        padding: 9vw 7vw;
     }
 
     body {
@@ -1848,6 +1964,15 @@ body {
         width: 60px;
         right: 1%;
 
+    }
+
+    .iceCreamDisplay {
+        left: 25vw;
+        width: 50vw;
+    }
+
+    .iceCreamTrace {
+        width: 50vw;
     }
 
     .puffButton {
