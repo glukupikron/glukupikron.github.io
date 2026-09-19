@@ -531,6 +531,57 @@ function getPopupCandidates() {
 const popupTemplate = document.querySelector("#popupTemplate");
 
 const popupArea = document.querySelector(".popupArea");
+const introPopupSequence = document.querySelector(".introPopupSequence");
+const introPopupMessages = [
+    "Are you waiting for someone?",
+    `Your gaze drifts back and forth between inside and outside, wavering with unease.
+This is a game about that kind of waiting.`,
+    `Various events will surface, but you do not have to respond to all of them.
+Follow wherever your heart drifts.`
+];
+let introPopupsStarted = false;
+
+function startIntroPopups() {
+    if (introPopupsStarted) return;
+    introPopupsStarted = true;
+
+    const staircase = document.createElement("div");
+    staircase.className = "introPopupStaircase";
+    introPopupSequence.appendChild(staircase);
+
+    introPopupMessages.forEach(function (message, index) {
+        const popup = popupTemplate.content.firstElementChild.cloneNode(true);
+        popup.classList.add("introSequencePopup", `introSequencePopup${index + 1}`);
+        popup.style.visibility = "hidden";
+        popup.querySelector(".popupContent").textContent = message;
+        popup.querySelector(".popupChoices").remove();
+
+        const closeButton = popup.querySelector(".popupClose");
+        closeButton.removeAttribute("onclick");
+        closeButton.addEventListener("click", function () {
+            popup.remove();
+        });
+
+        staircase.appendChild(popup);
+
+        setTimeout(function () {
+            popup.style.removeProperty("visibility");
+        }, index * 1000);
+    });
+}
+
+if ("IntersectionObserver" in window) {
+    const introPopupObserver = new IntersectionObserver(function (entries, observer) {
+        if (!entries.some(function (entry) { return entry.isIntersecting; })) return;
+
+        observer.disconnect();
+        startIntroPopups();
+    });
+
+    introPopupObserver.observe(introPopupSequence);
+} else {
+    startIntroPopups();
+}
 
 function findPopupData(popupId) {
     return popupData.find(function (popup){
