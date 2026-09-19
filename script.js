@@ -3,7 +3,50 @@ let restoreEventOpen = false;
 let autoScrollStep = 1;
 let scrollBoostTimer;
 
-function checkBottom () { 
+const takeawayConfig = {
+    apiBase: (window.TAKEAWAY_CONFIG?.apiBase || "").replace(/\/$/, ""),
+    retentionHours: window.TAKEAWAY_CONFIG?.retentionHours || 24,
+    desktopChunkHeight: window.TAKEAWAY_CONFIG?.desktopChunkHeight || 4000,
+    mobileChunkHeight: window.TAKEAWAY_CONFIG?.mobileChunkHeight || 2000,
+    webpQuality: window.TAKEAWAY_CONFIG?.webpQuality || 0.9
+};
+
+const takeawayState = {
+    status: "playing",
+    seenBottom: Math.max(window.innerHeight, window.scrollY + window.innerHeight),
+    shareUrl: ""
+};
+
+const takeawayClientId = getTakeawayClientId();
+
+function getTakeawayClientId() {
+    const storageKey = "waiting-takeaway-client";
+
+    try {
+        const storedId = localStorage.getItem(storageKey);
+        if (storedId) return storedId;
+
+        const newId = crypto.randomUUID();
+        localStorage.setItem(storageKey, newId);
+        return newId;
+    } catch (error) {
+        return crypto.randomUUID();
+    }
+}
+
+function trackSeenBottom() {
+    if (takeawayState.status !== "playing") return;
+
+    takeawayState.seenBottom = Math.max(
+        takeawayState.seenBottom,
+        window.scrollY + window.innerHeight
+    );
+}
+
+function checkBottom () {
+    trackSeenBottom();
+    if (takeawayState.status !== "playing") return;
+
     const reachedBottom = window.scrollY + window.innerHeight >=
     document.documentElement.scrollHeight - 1;
 
@@ -33,6 +76,7 @@ function boostScroll() {
 }
 
 window.addEventListener("scroll", checkBottom);
+window.addEventListener("resize", trackSeenBottom);
 
 // 팝업
 
@@ -584,6 +628,8 @@ function showPopup(popupId) {
 }
 
 function showRandomPopup(){
+    if (takeawayState.status !== "playing") return;
+
     const activePopups = popupArea.querySelectorAll(".randomPopup");
 
     if (activePopups.length >= 2) {
@@ -773,6 +819,7 @@ function resumeAfterRestore() {
 //랜덤 이벤트
 
 function randomEvent() {
+    if (takeawayState.status !== "playing") return;
 
     let availableEventSources = [...eventSources].filter(
         function (source) { 
@@ -1866,6 +1913,8 @@ const selectedImage = debrisImages[randomImageIndex];
 //debris 생성 등
 
 function createDebris(count) {
+    if (takeawayState.status !== "playing") return;
+
     for (let i = 0; i <count; i++) {
         const particle = document.createElement("img");
         const randomIndex = Math.floor(randomNumber(0, debrisImages.length));
@@ -2107,7 +2156,9 @@ function scheduleRandom(action, minDelay, maxDelay) {
     const randomDelay = Math.floor( Math.random() * (maxDelay - minDelay) + minDelay);
 
     setTimeout (function () {
-        action();
+        if (takeawayState.status === "playing") {
+            action();
+        }
         scheduleRandom(action, minDelay, maxDelay);
         }, randomDelay );
 }
@@ -2125,6 +2176,8 @@ let coinHideTimer;
 const coinImage = document.querySelector(".coinImage");
 
 function showCoin() {
+    if (takeawayState.status !== "playing") return;
+
     coinImage.classList.add("isVisible");
 
     clearTimeout(coinHideTimer);
@@ -2205,7 +2258,13 @@ function smoking (puff) {
     const tabakoBox = puff.closest(".tabakoImage");
     const taImage = tabakoBox.querySelector("img");
     
-    const smokingTimer = setInterval(function() { 
+    const smokingTimer = setInterval(function() {
+        if (takeawayState.status !== "playing") {
+            clearInterval(smokingTimer);
+            puff.disabled = false;
+            return;
+        }
+
         currentSmokingImage++;
 
         taImage.src = smokingImages[currentSmokingImage];
@@ -2564,47 +2623,278 @@ function checkPuzzle(puzzleBoard) {
 randomEvent();
 
 const owariModal = document.querySelector(".owariModal");
+const owariPrompt = owariModal.querySelector(".owariPrompt");
+const takeawayResult = owariModal.querySelector(".takeawayResult");
+const takeawayStatus = owariModal.querySelector(".takeawayStatus");
+const takeawayProgress = owariModal.querySelector(".takeawayProgress");
+const takeawayQr = owariModal.querySelector(".takeawayQr");
+const takeawayExpiry = owariModal.querySelector(".takeawayExpiry");
+const takeawayOpen = owariModal.querySelector(".takeawayOpen");
+const takeawayCopy = owariModal.querySelector(".takeawayCopy");
+const takeawayRetry = owariModal.querySelector(".takeawayRetry");
+const takeawayClose = owariModal.querySelector(".takeawayClose");
 
 function owari() {
     stopScroll();
+    owariPrompt.hidden = false;
+    takeawayResult.hidden = true;
     owariModal.hidden = false;
 }
 
 function closeOwari() {
     owariModal.hidden = true;
+
+    if (takeawayState.status === "ready") return;
+
+    takeawayState.status = "playing";
     scrollAgain();
+
+    if (!popupTimer) {
+        startPopupTimer();
+    }
 }
 
-async function captureJourney() {
-    const eventArea = document.querySelector(".eventArea");
-    
-    const canvas = await html2canvas(eventArea, {
+function showTakeawayResult() {
+    owariPrompt.hidden = true;
+    takeawayResult.hidden = false;
+}
+
+function resetTakeawayResult() {
+    takeawayStatus.textContent = "Preparing your takeaway…";
+    takeawayProgress.hidden = false;
+    takeawayProgress.value = 0;
+    takeawayQr.hidden = true;
+    takeawayExpiry.hidden = true;
+    takeawayOpen.hidden = true;
+    takeawayCopy.hidden = true;
+    takeawayRetry.hidden = true;
+    takeawayClose.hidden = true;
+    takeawayCopy.textContent = "Copy link";
+}
+
+async function waitForCaptureAssets(captureBottom) {
+    if (document.fonts?.ready) {
+        await document.fonts.ready;
+    }
+
+    const pendingImages = [...document.images].filter(function (image) {
+        if (image.closest("[data-capture-ignore]")) return false;
+
+        const imageTop = image.getBoundingClientRect().top + window.scrollY;
+        return imageTop < captureBottom && !image.complete;
+    });
+
+    if (pendingImages.length === 0) return;
+
+    const imagePromises = pendingImages.map(function (image) {
+        return new Promise(function (resolve) {
+            image.addEventListener("load", resolve, { once: true });
+            image.addEventListener("error", resolve, { once: true });
+        });
+    });
+
+    await Promise.race([
+        Promise.all(imagePromises),
+        new Promise(function (resolve) {
+            setTimeout(resolve, 8000);
+        })
+    ]);
+}
+
+async function captureJourneyChunk(y, height, width) {
+    return await html2canvas(document.body, {
         useCORS: true,
         backgroundColor: "#f5e4c5",
-        scale: 1
+        scale: 1,
+        x: 0,
+        y,
+        width,
+        height,
+        windowWidth: width,
+        windowHeight: window.innerHeight,
+        scrollX: 0,
+        scrollY: 0,
+        logging: false,
+        ignoreElements: function (element) {
+            return element.hasAttribute("data-capture-ignore");
+        },
+        onclone: function (clonedDocument) {
+            clonedDocument.documentElement.classList.add("takeawayCapture");
+        }
     });
-    
-    return canvas;
 }
 
-function downloadJourney(canvas) {
-    const downloadLink = document.createElement("a");
+function canvasToWebp(canvas) {
+    return new Promise(function (resolve, reject) {
+        canvas.toBlob(function (blob) {
+            if (blob) {
+                resolve(blob);
+            } else {
+                reject(new Error("The captured image could not be encoded."));
+            }
+        }, "image/webp", takeawayConfig.webpQuality);
+    });
+}
 
-    downloadLink.download = `waiting-${Date.now()}.png`;
-    downloadLink.href = canvas.toDataURL("image/png");
+async function requestTakeaway(path, options = {}) {
+    const headers = new Headers(options.headers || {});
+    headers.set("X-Takeaway-Client", takeawayClientId);
 
-    downloadLink.click();
+    const response = await fetch(`${takeawayConfig.apiBase}${path}`, {
+        ...options,
+        headers
+    });
+
+    if (!response.ok) {
+        let message = `The takeaway server returned ${response.status}.`;
+
+        try {
+            const body = await response.json();
+            if (body.error) message = body.error;
+        } catch (error) {
+            // The status code is enough when the response is not JSON.
+        }
+
+        throw new Error(message);
+    }
+
+    if (response.status === 204) return null;
+    return await response.json();
+}
+
+async function uploadJourneyChunk(journeyId, index, blob) {
+    let lastError;
+
+    for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+            await requestTakeaway(`/api/journeys/${journeyId}/chunks/${index}`, {
+                method: "PUT",
+                headers: { "Content-Type": "image/webp" },
+                body: blob
+            });
+            return;
+        } catch (error) {
+            lastError = error;
+        }
+    }
+
+    throw lastError;
+}
+
+async function renderTakeawayQr(shareUrl) {
+    if (!window.QRCode) {
+        throw new Error("The QR code library did not load.");
+    }
+
+    await QRCode.toCanvas(takeawayQr, shareUrl, {
+        width: 210,
+        margin: 2,
+        color: {
+            dark: "#776444",
+            light: "#f8f0e2"
+        }
+    });
+
+    takeawayQr.hidden = false;
+    takeawayOpen.href = shareUrl;
+}
+
+async function copyTakeawayLink() {
+    if (!takeawayState.shareUrl) return;
+
+    try {
+        await navigator.clipboard.writeText(takeawayState.shareUrl);
+        takeawayCopy.textContent = "Copied";
+    } catch (error) {
+        window.prompt("Copy this link:", takeawayState.shareUrl);
+    }
+}
+
+function stopJourneyChanges() {
+    stopScroll();
+    clearTimeout(popupTimer);
+    popupTimer = undefined;
+    clearTimeout(coinHideTimer);
+    stopPuzzleDebris();
 }
 
 async function finishJourney() {
-    try {
-        const canvas = await captureJourney();
+    if (takeawayState.status === "preparing") return;
 
-        downloadJourney(canvas);
-        owariModal.hidden = true;
+    takeawayState.status = "preparing";
+    takeawayState.shareUrl = "";
+    stopJourneyChanges();
+    resetTakeawayResult();
+    showTakeawayResult();
+
+    try {
+        if (!takeawayConfig.apiBase) {
+            throw new Error("The takeaway server has not been connected yet.");
+        }
+
+        const captureBottom = Math.ceil(Math.min(
+            takeawayState.seenBottom,
+            document.documentElement.scrollHeight
+        ));
+        const captureWidth = document.documentElement.clientWidth;
+        const chunkHeight = window.matchMedia("(max-width: 600px)").matches
+            ? takeawayConfig.mobileChunkHeight
+            : takeawayConfig.desktopChunkHeight;
+        const chunkCount = Math.ceil(captureBottom / chunkHeight);
+
+        const journey = await requestTakeaway("/api/journeys", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                chunkCount,
+                width: captureWidth,
+                height: captureBottom
+            })
+        });
+
+        takeawayState.shareUrl = journey.shareUrl;
+        await renderTakeawayQr(journey.shareUrl);
+        takeawayStatus.textContent = "Your takeaway is being prepared. Please keep this page open.";
+
+        await waitForCaptureAssets(captureBottom);
+
+        for (let index = 0; index < chunkCount; index++) {
+            const y = index * chunkHeight;
+            const height = Math.min(chunkHeight, captureBottom - y);
+            const canvas = await captureJourneyChunk(y, height, captureWidth);
+            let blob;
+
+            try {
+                blob = await canvasToWebp(canvas);
+            } finally {
+                canvas.width = 0;
+                canvas.height = 0;
+            }
+
+            await uploadJourneyChunk(journey.id, index, blob);
+
+            takeawayProgress.value = (index + 1) / chunkCount;
+            takeawayStatus.textContent = `Saving fragment ${index + 1} of ${chunkCount}…`;
+        }
+
+        await requestTakeaway(`/api/journeys/${journey.id}/complete`, {
+            method: "POST"
+        });
+
+        takeawayState.status = "ready";
+        takeawayStatus.textContent = "Your record of waiting is ready.";
+        takeawayProgress.hidden = true;
+        takeawayExpiry.hidden = false;
+        takeawayOpen.hidden = false;
+        takeawayCopy.hidden = false;
+        takeawayClose.hidden = false;
     } catch (error) {
         console.error(error);
-        alert("The image cannot be created.");
+        takeawayState.status = "failed";
+        takeawayStatus.textContent = "Something interrupted the process. Your journey is still here.";
+        takeawayProgress.hidden = true;
+        takeawayRetry.hidden = false;
+        takeawayClose.hidden = false;
     }
 }
 

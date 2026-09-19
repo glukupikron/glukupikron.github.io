@@ -1,0 +1,42 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "waiting-takeaway",
+  "main": "src/index.js",
+  "compatibility_date": "2026-05-03",
+  "r2_buckets": [
+    {
+      "binding": "TAKEAWAYS",
+      "bucket_name": "waiting-takeaways"
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "TAKEAWAY_QUOTA",
+        "class_name": "TakeawayQuota"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": [
+        "TakeawayQuota"
+      ]
+    }
+  ],
+  "ratelimits": [
+    {
+      "name": "TAKEAWAY_RATE_LIMIT",
+      "namespace_id": "2026091901",
+      "simple": {
+        "limit": 600,
+        "period": 60
+      }
+    }
+  ],
+  "vars": {
+    "ALLOWED_ORIGINS": "https://waitingfor.website,https://glukupikron.github.io",
+    "RETENTION_HOURS": "24"
+  }
+}

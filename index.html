@@ -33,7 +33,7 @@
 
     </section>
 
-    <button type="button" class="owariButton" onclick="owari()">
+    <button type="button" class="owariButton" data-capture-ignore onclick="owari()">
       Done?
     </button>
 
@@ -41,7 +41,7 @@
 <div class = "coinImage"></div>
 
 <!-- 담배 구역-->
- <div class = "tabakoImage">
+ <div class = "tabakoImage" data-capture-ignore>
   <img src = "use_image/ta_1.png">
   <button class = puffButton onclick = "event.stopPropagation(); smoking(this); scrollAgain();">Puff!</button>
  </div>
@@ -371,26 +371,55 @@
     </div>
 
 
-    <div class = "owariModal" hidden>
+    <div class = "owariModal" data-capture-ignore hidden>
       <div class = "owariModalContent">
-        <p>Has the one you have been waiting for arrived?<br>You can take away your record of waiting.</p>
+        <div class="owariPrompt takeawayView">
+          <p>
+            Has the one you’ve been waiting for arrived?<br>
+            Take the traces of your waiting with you.<br>
+            Your takeaway will remain for one day.
+          </p>
 
-        <div class = "owariModalButtons">
-          <button type = "button" onclick= "finishJourney()">
-            Yes
-          </button>
-          <button type="button" onclick="closeOwari()">
-            Not yet
-          </button>
+          <div class = "owariModalButtons">
+            <button type = "button" onclick= "finishJourney()">
+              Yes
+            </button>
+            <button type="button" onclick="closeOwari()">
+              Not yet
+            </button>
+          </div>
+        </div>
 
+        <div class="takeawayResult takeawayView" hidden>
+          <p class="takeawayStatus" aria-live="polite">Preparing your takeaway…</p>
+          <progress class="takeawayProgress" value="0" max="1"></progress>
+          <canvas class="takeawayQr" aria-label="QR code for your takeaway" hidden></canvas>
+          <p class="takeawayExpiry" hidden>
+            Your record of waiting is ready.<br>
+            It will remain available for one day.
+          </p>
+          <div class="owariModalButtons takeawayResultButtons">
+            <a class="takeawayOpen" target="_blank" rel="noopener" hidden>Open</a>
+            <button type="button" class="takeawayCopy" onclick="copyTakeawayLink()" hidden>
+              Copy link
+            </button>
+            <button type="button" class="takeawayRetry" onclick="finishJourney()" hidden>
+              Try again
+            </button>
+            <button type="button" class="takeawayClose" onclick="closeOwari()" hidden>
+              Close
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
     
-  <script src="https://cdn.jsdelivr.net/npm/gridstack@12.6.0/dist/gridstack-all.js"></script>  
+  <script src="https://cdn.jsdelivr.net/npm/gridstack@12.6.0/dist/gridstack-all.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.0.2/anime.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+  <script src="takeaway-config.js"></script>
   <script src="script.js"></script>
   </body>
 
