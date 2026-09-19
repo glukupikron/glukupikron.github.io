@@ -785,6 +785,63 @@ function pickRandom(items) {
     return items[randomIndex];
 }
 
+const animatedEventNames = [
+    "hanabi",
+    "crow",
+    "moon",
+    "carStreet",
+    "shrimp",
+    "bus"
+];
+let animatedEventBag = [];
+let previousAnimatedEventName = null;
+
+function getAnimatedEventName(source) {
+    return animatedEventNames.find(function (name) {
+        return source.classList.contains(name);
+    }) || null;
+}
+
+function refillAnimatedEventBag() {
+    animatedEventBag = [...animatedEventNames];
+
+    for (let index = animatedEventBag.length - 1; index > 0; index--) {
+        const randomIndex = Math.floor(Math.random() * (index + 1));
+        [animatedEventBag[index], animatedEventBag[randomIndex]] =
+            [animatedEventBag[randomIndex], animatedEventBag[index]];
+    }
+
+    if (animatedEventBag[0] === previousAnimatedEventName) {
+        const differentIndex = animatedEventBag.findIndex(function (name) {
+            return name !== previousAnimatedEventName;
+        });
+
+        [animatedEventBag[0], animatedEventBag[differentIndex]] =
+            [animatedEventBag[differentIndex], animatedEventBag[0]];
+    }
+}
+
+function pickNextAnimatedEvent(candidates) {
+    if (animatedEventBag.length === 0) {
+        refillAnimatedEventBag();
+    }
+
+    const nextIndex = animatedEventBag.findIndex(function (name) {
+        return candidates.some(function (source) {
+            return source.classList.contains(name);
+        });
+    });
+
+    if (nextIndex === -1) return null;
+
+    const nextName = animatedEventBag.splice(nextIndex, 1)[0];
+    previousAnimatedEventName = nextName;
+
+    return candidates.find(function (source) {
+        return source.classList.contains(nextName);
+    });
+}
+
 //캔버스 row sources 
 
 const canvasRowSources = [
@@ -994,7 +1051,10 @@ function randomEvent() {
         selectedSource = birdCloudSource;
         regularEventCount = 0;
     } else {
-        selectedSource = pickRandom(eventCandidates);
+        const randomSource = pickRandom(eventCandidates);
+        selectedSource = getAnimatedEventName(randomSource)
+            ? pickNextAnimatedEvent(eventCandidates) || randomSource
+            : randomSource;
         regularEventCount++;
         previousEventSource = selectedSource;
     }
@@ -1304,7 +1364,6 @@ function addScratchMark(eventElement, mark) {
 
 function setupScratchEvent(eventElement) {
     scratchState.open = true;
-    stopScroll();
 
     eventElement.appendChild(
         document.querySelector("#singleEventLayout").content.cloneNode(true)
@@ -1358,6 +1417,8 @@ document.querySelector(".eventArea").addEventListener("click", function (event) 
     const alpha = handHitMap.context.getImageData(pixelX, pixelY, 1, 1).data[3];
 
     if (alpha < 20) return;
+
+    stopScroll();
 
     const mark = { x, y };
     scratchState.marks.push(mark);
@@ -1506,7 +1567,6 @@ document.querySelector(".eventArea").addEventListener("click", function (event) 
 function setupRestoreEvent(eventElement) {
     const type = eventElement.dataset.restore;
     restoreEventOpen = true;
-    stopScroll();
 
     if (type === "doll") {
         eventElement.appendChild(
