@@ -2384,6 +2384,25 @@ function selectShrimp(select) {
     }
 }
 
+
+// bus
+
+function selectBus(select) {
+    const bus = select.closest(".bus");
+    if (select.value === "yes") {
+        setTimeout(function() {
+            bus.style.backgroundImage = 'url("use_image/bus_umzzal.gif")';
+        },3000);
+
+        setTimeout(function () { createDebris(15);}, 10000);
+        
+    }
+
+    if (select.value === "no") {
+        scrollAgain();
+    }
+}
+
 // jukebox
 
 function chooseTrackButton(button){
@@ -2782,18 +2801,38 @@ async function uploadJourneyChunk(journeyId, index, blob) {
 }
 
 async function renderTakeawayQr(shareUrl) {
-    if (!window.QRCode) {
+    if (!window.qrcode) {
         throw new Error("The QR code library did not load.");
     }
 
-    await QRCode.toCanvas(takeawayQr, shareUrl, {
-        width: 210,
-        margin: 2,
-        color: {
-            dark: "#776444",
-            light: "#f8f0e2"
+    const qr = qrcode(0, "M");
+    qr.addData(shareUrl);
+    qr.make();
+
+    const margin = 2;
+    const moduleCount = qr.getModuleCount();
+    const moduleSize = Math.floor(210 / (moduleCount + margin * 2));
+    const canvasSize = (moduleCount + margin * 2) * moduleSize;
+    const context = takeawayQr.getContext("2d");
+
+    takeawayQr.width = canvasSize;
+    takeawayQr.height = canvasSize;
+    context.fillStyle = "#f8f0e2";
+    context.fillRect(0, 0, canvasSize, canvasSize);
+    context.fillStyle = "#776444";
+
+    for (let row = 0; row < moduleCount; row++) {
+        for (let column = 0; column < moduleCount; column++) {
+            if (!qr.isDark(row, column)) continue;
+
+            context.fillRect(
+                (column + margin) * moduleSize,
+                (row + margin) * moduleSize,
+                moduleSize,
+                moduleSize
+            );
         }
-    });
+    }
 
     takeawayQr.hidden = false;
     takeawayOpen.href = shareUrl;

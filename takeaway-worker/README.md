@@ -37,7 +37,7 @@ This Worker receives the captured fragments, stores them in Cloudflare R2, and s
 
 6. The deployed Worker currently uses `https://waiting-takeaway.lucia1007.workers.dev`.
 
-The public site already points its requests to that address in `takeaway-config.js`. The Worker accepts browser uploads only from `https://waitingfor.website` and its GitHub Pages fallback domain. A `takeaway.waitingfor.website` custom domain can be added later, but it is not required.
+The public site already points its requests to that address in `takeaway-config.js`. The Worker also accepts local development origins using `localhost`, `127.0.0.1`, or `::1` on any port. A `takeaway.waitingfor.website` custom domain can be added later, but it is not required.
 
 The application checks each manifest’s exact timestamp, so a link stops working exactly 24 hours after creation. The R2 lifecycle rule then removes the stored objects automatically; Cloudflare notes that physical lifecycle deletion can be processed after the expiration time.
 

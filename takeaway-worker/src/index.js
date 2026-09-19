@@ -287,12 +287,14 @@ function isValidId(id) {
 
 function originIsAllowed(request, env) {
     const origin = request.headers.get("Origin");
-    return !origin || allowedOrigins(env).includes(origin);
+    return !origin ||
+        allowedOrigins(env).includes(origin) ||
+        isLocalDevelopmentOrigin(origin);
 }
 
 function withCors(response, request, env) {
     const origin = request.headers.get("Origin");
-    if (!origin || !allowedOrigins(env).includes(origin)) return response;
+    if (!origin || !originIsAllowed(request, env)) return response;
 
     const headers = new Headers(response.headers);
     headers.set("Access-Control-Allow-Origin", origin);
@@ -328,6 +330,18 @@ function allowedOrigins(env) {
         .split(",")
         .map(function (origin) { return origin.trim(); })
         .filter(Boolean);
+}
+
+function isLocalDevelopmentOrigin(origin) {
+    try {
+        const url = new URL(origin);
+        const localHosts = ["localhost", "127.0.0.1", "[::1]"];
+
+        return (url.protocol === "http:" || url.protocol === "https:") &&
+            localHosts.includes(url.hostname);
+    } catch (error) {
+        return false;
+    }
 }
 
 function json(body, status = 200) {

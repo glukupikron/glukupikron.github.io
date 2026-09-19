@@ -1064,6 +1064,47 @@ body {
   position: relative;
 }
 
+/*버스*/
+.bus {
+  
+  width: calc(100% + 80px);
+  height: 500px;   
+  margin-left: -40px;
+  margin-bottom: 300px;
+  padding-bottom: 5px;
+  display: grid;
+  border: 1px solid;
+  border-color: rgb(198, 204, 206);
+  background-image: url(use_image/bus_capture.png);
+  background-repeat: repeat-x;
+  background-size: contain;
+  box-sizing: border-box;
+  place-items: center; 
+  font-family : 'Courier New', Courier, monospace;
+  text-align: center;
+ 
+ 
+  grid-template-columns: 1fr; 
+  grid-template-rows: 1.8fr 0.2fr; 
+  gap: 0px 0px; 
+  grid-template-areas: 
+    "."
+    "."; 
+  filter: contrast(80%);
+}
+
+.busRow2
+{
+    padding: 5px;
+    line-height: 1.4;
+}
+
+.bus:hover {
+  box-shadow:0 0 0 1600px rgba(0,0,0,0.65);/* dark around it */
+  z-index: 10;
+  position: relative;
+}
+
 /*새우*/
 
 .shrimp {
@@ -1697,6 +1738,13 @@ body {
     }
 
 
+    .bus:hover {
+        box-shadow: none;
+        z-index: auto;
+        position: static;
+    }
+
+
     .sphere {
         width: 300px;
     }
@@ -1842,6 +1890,15 @@ body {
         
     }
     .shrimp {
+        width: calc(100% + 20px);
+        margin-left: -10px;
+        margin-top: 20px;
+        margin-bottom: 300px;
+        background-repeat: repeat-y;
+        height: 800px;
+        
+    }
+    .bus {
         width: calc(100% + 20px);
         margin-left: -10px;
         margin-top: 20px;

@@ -180,6 +180,25 @@
   </div>
 </div>
 
+<!--bus 구역-->
+<div class="eventTemplate bus" onclick="stopScroll()">
+  <div class="busRow1">
+  </div>
+  <div class="busRow2">
+    <span style="background-color: rgba(255, 255, 255, 0.5)">Would you like to wait for the bus to move again?</span>
+    <div class="select-wrapper">
+      <select class="custom-select" onclick="event.stopPropagation()" onchange="selectBus(this)">
+        <option value="" disabled selected>huh?</option>
+        <option>yes</option>
+        <option>no</option>
+      </select>
+      <div class="select-arrow">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="#6b7280" stroke="none"><polygon points="6,9 18,9 12,16"/></svg>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!--차 구역-->
 <div class ="eventTemplate carStreet" onclick = 'stopScroll()'>
   <div class="carRow1">
@@ -418,7 +437,7 @@
   <script src="https://cdn.jsdelivr.net/npm/gridstack@12.6.0/dist/gridstack-all.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.0.2/anime.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
   <script src="takeaway-config.js"></script>
   <script src="script.js"></script>
   </body>
