@@ -871,13 +871,37 @@ body {
     font-size: 14px;
 }
 
-.nekoButton1,
-.nekoButton2,
-.nekoButton3 {
+.nekoButton1 {
     background-image: url("use_image/saryo1.png");
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
+    background-color: transparent;
+    appearance: none;
+    -webkit-appearance: none;
+    border: transparent;
+    cursor: pointer;
+}
+.nekoButton2
+{
+    background-image: url("use_image/adew.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    background-color: transparent;
+    appearance: none;
+    -webkit-appearance: none;
+    border: transparent;
+    cursor: pointer;
+}
+.nekoButton3 {
+    background-image: url("use_image/catnip.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    background-color: transparent;
+    appearance: none;
+    -webkit-appearance: none;
     border: transparent;
     cursor: pointer;
 }
