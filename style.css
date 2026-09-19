@@ -950,7 +950,7 @@ body {
   grid-template-areas:
     "."
     ".";
-  filter: contrast(90%);
+  filter: contrast(80%) brightness(110%);
 }
 
 .moon {
@@ -1042,7 +1042,7 @@ body {
   place-items: center; 
   font-family : 'Courier New', Courier, monospace;
   text-align: center;
-  filter: contrast(80%);
+  filter: contrast(70%);
 
   /*filter: contrast(55%) brightness(120%);*/
  
